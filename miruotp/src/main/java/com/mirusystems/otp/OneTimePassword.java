@@ -1,0 +1,80 @@
+package com.mirusystems.otp;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+public class OneTimePassword {
+    public static final int SUCCESS = 0;
+    public static final int ERR_CHECKSUM = -1;
+    public static final int ERR_SEED = -2;
+    public static final int ERR_PERMISSION = -3;
+
+    private Context context;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
+
+    public OneTimePassword(Context context) {
+        this.context = context;
+        preferences = context.getSharedPreferences("pw", Context.MODE_PRIVATE);
+        editor = preferences.edit();
+    }
+
+    public String generatePassword(String seed, int permission) throws OneTimePasswordException {
+        if (seed == null) {
+            throw new OneTimePasswordException("Seed must not be null.");
+        }
+        if (seed.length() != 8) {
+            throw new OneTimePasswordException("The length of the seed must be 8.");
+        }
+        try {
+            long s = Long.parseLong(seed);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new OneTimePasswordException("Seed must only be a number.");
+        }
+        return generatePasswordJni(seed, permission);
+    }
+
+    public boolean checkPassword(String password, String seed, int permission) throws OneTimePasswordException {
+        if (password == null) {
+            throw new OneTimePasswordException("Password must not be null.");
+        }
+        if (password.length() != 10) {
+            throw new OneTimePasswordException("The length of the password must be 10.");
+        }
+        if (isUsedPassword(password)) {
+            throw new OneTimePasswordException("You can only use the password once.");
+        }
+        if (seed == null) {
+            throw new OneTimePasswordException("Seed must not be null.");
+        }
+        if (seed.length() != 8) {
+            throw new OneTimePasswordException("The length of the seed must be 8.");
+        }
+
+        int ret = checkPasswordJni(password, seed, permission);
+        if (ret == SUCCESS) {
+            addUsedPassword(password);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isUsedPassword(String password) {
+        return preferences.contains(password);
+    }
+
+    private void addUsedPassword(String password) {
+        editor.putBoolean(password, true);
+        editor.apply();
+    }
+
+    static {
+        System.loadLibrary("miruotp");
+    }
+
+    private native String generatePasswordJni(String seed, int permission);
+
+    private native int checkPasswordJni(String password, String seed, int permission);
+}
