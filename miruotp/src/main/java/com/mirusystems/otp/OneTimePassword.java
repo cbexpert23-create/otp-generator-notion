@@ -8,6 +8,11 @@ public class OneTimePassword {
     public static final int ERR_CHECKSUM = -1;
     public static final int ERR_SEED = -2;
     public static final int ERR_PERMISSION = -3;
+    public static final int ERR_DEVICE = -4;
+
+    public static final int BVVD = 1;
+    public static final int PCOS = 2;
+    public static final int RTS = 3;
 
     private Context context;
     private SharedPreferences preferences;
@@ -15,11 +20,11 @@ public class OneTimePassword {
 
     public OneTimePassword(Context context) {
         this.context = context;
-        preferences = context.getSharedPreferences("pw", Context.MODE_PRIVATE);
+        preferences = context.getSharedPreferences("otp", Context.MODE_PRIVATE);
         editor = preferences.edit();
     }
 
-    public String generatePassword(String seed, int permission) throws OneTimePasswordException {
+    public String generatePassword(String seed, int deviceId, int permission) throws OneTimePasswordException {
         if (seed == null) {
             throw new OneTimePasswordException("Seed must not be null.");
         }
@@ -32,10 +37,10 @@ public class OneTimePassword {
             e.printStackTrace();
             throw new OneTimePasswordException("Seed must only be a number.");
         }
-        return generatePasswordJni(seed, permission);
+        return generatePasswordJni(seed, deviceId, permission);
     }
 
-    public boolean checkPassword(String password, String seed, int permission) throws OneTimePasswordException {
+    public boolean checkPassword(String password, String seed, int deviceId, int permission) throws OneTimePasswordException {
         if (password == null) {
             throw new OneTimePasswordException("Password must not be null.");
         }
@@ -52,7 +57,7 @@ public class OneTimePassword {
             throw new OneTimePasswordException("The length of the seed must be 8.");
         }
 
-        int ret = checkPasswordJni(password, seed, permission);
+        int ret = checkPasswordJni(password, seed, deviceId, permission);
         if (ret == SUCCESS) {
             addUsedPassword(password);
             return true;
@@ -74,7 +79,7 @@ public class OneTimePassword {
         System.loadLibrary("miruotp");
     }
 
-    private native String generatePasswordJni(String seed, int permission);
+    private native String generatePasswordJni(String seed, int deviceId, int permission);
 
-    private native int checkPasswordJni(String password, String seed, int permission);
+    private native int checkPasswordJni(String password, String seed, int deviceId, int permission);
 }

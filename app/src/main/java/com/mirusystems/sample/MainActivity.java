@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.button_generate_password: {
                 String seed = seedEdit.getText().toString();
                 try {
-                    String password = oneTimePassword.generatePassword(seed, 0);
+                    String password = oneTimePassword.generatePassword(seed, 3, 0);
                     passwordText.setText(password);
                 } catch (OneTimePasswordException e) {
                     e.printStackTrace();
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 String password = passwordText.getText().toString();
                 String seed = seedEdit.getText().toString();
                 try {
-                    boolean success = oneTimePassword.checkPassword(password, seed, 0);
+                    boolean success = oneTimePassword.checkPassword(password, seed, 3, 0);
                     Log.v(TAG, "onClick: button_check_password: success = " + success);
                     if (success) {
                         passwordCheckResultText.setText("success");
