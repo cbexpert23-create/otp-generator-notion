@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText seedEdit;
     private TextView passwordText;
     private TextView passwordCheckResultText;
+    private Spinner devicesSpinner;
+    private Spinner permissionsSpinner;
 
     private OneTimePassword oneTimePassword;
 
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
         seedEdit = findViewById(R.id.edit_seed);
         passwordText = findViewById(R.id.text_password);
         passwordCheckResultText = findViewById(R.id.text_password_check_result);
+        devicesSpinner = findViewById(R.id.spinner_devices);
+        permissionsSpinner = findViewById(R.id.spinner_permissions);
 
         Context context = getApplicationContext();
         oneTimePassword = new OneTimePassword(context);
@@ -60,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.button_generate_password: {
                 String seed = seedEdit.getText().toString();
+                int deviceId = getDeviceId();
+                int permission = getPermission();
                 try {
-                    String password = oneTimePassword.generatePassword(seed, 3, 0);
+                    String password = oneTimePassword.generatePassword(seed, deviceId, permission);
                     passwordText.setText(password);
                 } catch (OneTimePasswordException e) {
                     e.printStackTrace();
@@ -72,8 +79,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.button_check_password: {
                 String password = passwordText.getText().toString();
                 String seed = seedEdit.getText().toString();
+                int deviceId = getDeviceId();
+                int permission = getPermission();
                 try {
-                    boolean success = oneTimePassword.checkPassword(password, seed, 3, 0);
+                    boolean success = oneTimePassword.checkPassword(password, seed, deviceId, permission);
                     Log.v(TAG, "onClick: button_check_password: success = " + success);
                     if (success) {
                         passwordCheckResultText.setText("success");
@@ -91,6 +100,19 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    private int getDeviceId() {
+        int deviceId = devicesSpinner.getSelectedItemPosition() + 1;
+        return deviceId;
+    }
+
+    private int getPermission() {
+        int permission = permissionsSpinner.getSelectedItemPosition();
+        if (permission != OneTimePassword.ADMIN) {
+            permission = OneTimePassword.SUPER_ADMIN;
+        }
+        return permission;
     }
 
     public static void hideKeyboard(Activity activity) {

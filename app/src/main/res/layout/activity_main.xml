@@ -13,23 +13,45 @@
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:ems="10"
+        android:ems="10" android:text="10520101"
         android:inputType="number"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Spinner
+        android:id="@+id/spinner_devices"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:entries="@array/devices"
+        app:layout_constraintEnd_toEndOf="@+id/edit_seed"
+        app:layout_constraintStart_toStartOf="@+id/edit_seed"
+        app:layout_constraintTop_toBottomOf="@+id/edit_seed" />
+
+    <Spinner
+        android:id="@+id/spinner_permissions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:entries="@array/permissions"
+        app:layout_constraintEnd_toEndOf="@+id/spinner_devices"
+        app:layout_constraintStart_toStartOf="@+id/spinner_devices"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_devices" />
+
     <Button
         android:id="@+id/button_generate_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:onClick="onClick"
         android:text="generate password"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/edit_seed"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/edit_seed"
-        app:layout_constraintTop_toBottomOf="@+id/edit_seed" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner_permissions" />
 
     <TextView
         android:id="@+id/text_password"
@@ -62,5 +84,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_check_password" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class OneTimePassword {
+    private static final String TAG = "OneTimePassword";
+
     public static final int SUCCESS = 0;
     public static final int ERR_CHECKSUM = -1;
     public static final int ERR_SEED = -2;
@@ -13,6 +15,9 @@ public class OneTimePassword {
     public static final int BVVD = 1;
     public static final int PCOS = 2;
     public static final int RTS = 3;
+
+    public static final int ADMIN = 0;
+    public static final int SUPER_ADMIN = 5;
 
     private Context context;
     private SharedPreferences preferences;
