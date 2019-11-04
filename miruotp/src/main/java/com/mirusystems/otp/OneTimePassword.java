@@ -2,6 +2,7 @@ package com.mirusystems.otp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class OneTimePassword {
     private static final String TAG = "OneTimePassword";
@@ -53,7 +54,10 @@ public class OneTimePassword {
             throw new OneTimePasswordException("The length of the password must be 10.");
         }
         if (isUsedPassword(password)) {
-            throw new OneTimePasswordException("You can only use the password once.");
+            throw new OneTimePasswordException("The password has already been used.");
+        }
+        if (!isUpperCase(password)) {
+            throw new OneTimePasswordException("The password must be capitalized.");
         }
         if (seed == null) {
             throw new OneTimePasswordException("Seed must not be null.");
@@ -78,6 +82,16 @@ public class OneTimePassword {
     private void addUsedPassword(String password) {
         editor.putBoolean(password, true);
         editor.apply();
+    }
+
+    private static boolean isUpperCase(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (!Character.isUpperCase(s.charAt(i))) {
+                Log.e(TAG, "isUpperCase: " + s.charAt(i));
+                return false;
+            }
+        }
+        return true;
     }
 
     static {

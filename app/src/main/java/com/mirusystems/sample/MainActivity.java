@@ -2,11 +2,14 @@ package com.mirusystems.sample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private EditText seedEdit;
-    private TextView passwordText;
+    private TextView passwordEdit;
     private TextView passwordCheckResultText;
     private Spinner devicesSpinner;
     private Spinner permissionsSpinner;
@@ -34,10 +37,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         seedEdit = findViewById(R.id.edit_seed);
-        passwordText = findViewById(R.id.text_password);
+        passwordEdit = findViewById(R.id.edit_password);
         passwordCheckResultText = findViewById(R.id.text_password_check_result);
         devicesSpinner = findViewById(R.id.spinner_devices);
         permissionsSpinner = findViewById(R.id.spinner_permissions);
+
+//        passwordEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        devicesSpinner.setAdapter(ArrayAdapter.createFromResource(this, R.array.devices, R.layout.spinner_item));
+        permissionsSpinner.setAdapter(ArrayAdapter.createFromResource(this, R.array.permissions, R.layout.spinner_item));
 
         Context context = getApplicationContext();
         oneTimePassword = new OneTimePassword(context);
@@ -69,15 +76,15 @@ public class MainActivity extends AppCompatActivity {
                 int permission = getPermission();
                 try {
                     String password = oneTimePassword.generatePassword(seed, deviceId, permission);
-                    passwordText.setText(password);
+                    passwordEdit.setText(password);
                 } catch (OneTimePasswordException e) {
                     e.printStackTrace();
-                    passwordText.setText(e.getMessage());
+                    passwordEdit.setText(e.getMessage());
                 }
                 break;
             }
             case R.id.button_check_password: {
-                String password = passwordText.getText().toString();
+                String password = passwordEdit.getText().toString();
                 String seed = seedEdit.getText().toString();
                 int deviceId = getDeviceId();
                 int permission = getPermission();
@@ -86,12 +93,15 @@ public class MainActivity extends AppCompatActivity {
                     Log.v(TAG, "onClick: button_check_password: success = " + success);
                     if (success) {
                         passwordCheckResultText.setText("success");
+                        passwordCheckResultText.setTextColor(Color.DKGRAY);
                     } else {
                         passwordCheckResultText.setText("fail");
+                        passwordCheckResultText.setTextColor(Color.RED);
                     }
                 } catch (OneTimePasswordException e) {
                     e.printStackTrace();
                     passwordCheckResultText.setText(e.getMessage());
+                    passwordCheckResultText.setTextColor(Color.RED);
                 }
                 break;
             }

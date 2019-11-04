@@ -10,12 +10,13 @@
 
     <EditText
         android:id="@+id/edit_seed"
-        android:layout_width="240dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:ems="10" android:text="10520101"
+        android:ems="10"
         android:inputType="number"
-        android:textSize="24sp"
+        android:text="10520101"
+        android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -42,45 +43,44 @@
 
     <Button
         android:id="@+id/button_generate_password"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:onClick="onClick"
         android:text="generate password"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/edit_seed"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/edit_seed"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_permissions" />
-
-    <TextView
-        android:id="@+id/text_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_permissions" />
+
+    <EditText
+        android:id="@+id/edit_password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="@+id/spinner_permissions"
+        app:layout_constraintStart_toStartOf="@+id/spinner_permissions"
         app:layout_constraintTop_toBottomOf="@+id/button_generate_password" />
 
     <Button
         android:id="@+id/button_check_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:onClick="onClick"
         android:text="check password"
-        android:textSize="24sp"
+        android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="@+id/button_generate_password"
         app:layout_constraintStart_toStartOf="@+id/button_generate_password"
-        app:layout_constraintTop_toBottomOf="@+id/text_password" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_password" />
 
     <TextView
         android:id="@+id/text_password_check_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textSize="20sp"
+        android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_check_password" />
