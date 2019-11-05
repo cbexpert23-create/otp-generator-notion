@@ -41,8 +41,15 @@ public class OneTimePassword {
             long s = Long.parseLong(seed);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            throw new OneTimePasswordException("Seed must only be a number.");
+            throw new OneTimePasswordException("The seed must consist only of numbers.");
         }
+        if (!isSupportedDevice(deviceId)) {
+            throw new OneTimePasswordException("The deviceId is not supported");
+        }
+        if (!isSupportedPermission(permission)) {
+            throw new OneTimePasswordException("The permission is not supported");
+        }
+
         return generatePasswordJni(seed, deviceId, permission);
     }
 
@@ -57,13 +64,25 @@ public class OneTimePassword {
             throw new OneTimePasswordException("The password has already been used.");
         }
         if (!isUpperCase(password)) {
-            throw new OneTimePasswordException("The password must be capitalized.");
+            throw new OneTimePasswordException("Passwords should only use uppercase letters.");
         }
         if (seed == null) {
             throw new OneTimePasswordException("Seed must not be null.");
         }
         if (seed.length() != 8) {
             throw new OneTimePasswordException("The length of the seed must be 8.");
+        }
+        try {
+            long s = Long.parseLong(seed);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new OneTimePasswordException("The seed must consist only of numbers.");
+        }
+        if (!isSupportedDevice(deviceId)) {
+            throw new OneTimePasswordException("The deviceId is not supported");
+        }
+        if (!isSupportedPermission(permission)) {
+            throw new OneTimePasswordException("The permission is not supported");
         }
 
         int ret = checkPasswordJni(password, seed, deviceId, permission);
@@ -82,6 +101,14 @@ public class OneTimePassword {
     private void addUsedPassword(String password) {
         editor.putBoolean(password, true);
         editor.apply();
+    }
+
+    private boolean isSupportedDevice(int deviceId) {
+        return deviceId == BVVD || deviceId == PCOS || deviceId == RTS;
+    }
+
+    private boolean isSupportedPermission(int permission) {
+        return permission == ADMIN || permission == SUPER_ADMIN;
     }
 
     private static boolean isUpperCase(String s) {

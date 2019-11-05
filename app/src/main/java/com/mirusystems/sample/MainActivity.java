@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText seedEdit;
     private TextView passwordEdit;
-    private TextView passwordCheckResultText;
+    private TextView resultText;
     private Spinner devicesSpinner;
     private Spinner permissionsSpinner;
 
@@ -38,11 +38,11 @@ public class MainActivity extends AppCompatActivity {
 
         seedEdit = findViewById(R.id.edit_seed);
         passwordEdit = findViewById(R.id.edit_password);
-        passwordCheckResultText = findViewById(R.id.text_password_check_result);
+        resultText = findViewById(R.id.text_result);
         devicesSpinner = findViewById(R.id.spinner_devices);
         permissionsSpinner = findViewById(R.id.spinner_permissions);
 
-//        passwordEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        passwordEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
         devicesSpinner.setAdapter(ArrayAdapter.createFromResource(this, R.array.devices, R.layout.spinner_item));
         permissionsSpinner.setAdapter(ArrayAdapter.createFromResource(this, R.array.permissions, R.layout.spinner_item));
 
@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
                     passwordEdit.setText(password);
                 } catch (OneTimePasswordException e) {
                     e.printStackTrace();
-                    passwordEdit.setText(e.getMessage());
+                    resultText.setText(e.getMessage());
+                    resultText.setTextColor(Color.RED);
                 }
                 break;
             }
@@ -92,16 +93,16 @@ public class MainActivity extends AppCompatActivity {
                     boolean success = oneTimePassword.checkPassword(password, seed, deviceId, permission);
                     Log.v(TAG, "onClick: button_check_password: success = " + success);
                     if (success) {
-                        passwordCheckResultText.setText("success");
-                        passwordCheckResultText.setTextColor(Color.DKGRAY);
+                        resultText.setText("success");
+                        resultText.setTextColor(Color.DKGRAY);
                     } else {
-                        passwordCheckResultText.setText("fail");
-                        passwordCheckResultText.setTextColor(Color.RED);
+                        resultText.setText("fail");
+                        resultText.setTextColor(Color.RED);
                     }
                 } catch (OneTimePasswordException e) {
                     e.printStackTrace();
-                    passwordCheckResultText.setText(e.getMessage());
-                    passwordCheckResultText.setTextColor(Color.RED);
+                    resultText.setText(e.getMessage());
+                    resultText.setTextColor(Color.RED);
                 }
                 break;
             }
