@@ -94,6 +94,25 @@ public class OneTimePassword {
         }
     }
 
+    public String getSeed(String password) throws OneTimePasswordException {
+        if (password == null) {
+            throw new OneTimePasswordException("Password must not be null.");
+        }
+        if (password.length() != 10) {
+            throw new OneTimePasswordException("The length of the password must be 10.");
+        }
+        if (!isUpperCase(password)) {
+            throw new OneTimePasswordException("Passwords should only use uppercase letters.");
+        }
+
+        String ret = getSeedJni(password);
+        if (ret == null) {
+            throw new OneTimePasswordException("Checksum is not matched.");
+        }
+        Log.v(TAG, "getSeed: ret = " + ret);
+        return ret;
+    }
+
     private boolean isUsedPassword(String password) {
         return preferences.contains(password);
     }
@@ -128,4 +147,6 @@ public class OneTimePassword {
     private native String generatePasswordJni(String seed, int deviceId, int permission);
 
     private native int checkPasswordJni(String password, String seed, int deviceId, int permission);
+
+    private native String getSeedJni(String password);
 }

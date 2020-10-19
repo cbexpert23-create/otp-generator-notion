@@ -238,3 +238,74 @@ Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni(JNIEnv *env, jobject t
 
     return 0;
 }
+
+JNIEXPORT jstring JNICALL
+Java_com_mirusystems_otp_OneTimePassword_getSeedJni(JNIEnv *env, jobject thiz,
+                                                    jstring jPassword) {
+    jstring result;
+    const char *password = NULL;
+
+    password = (*env)->GetStringUTFChars(env, jPassword, 0);
+    LOGV("Java_com_mirusystems_otp_OneTimePassword_getSeedJni: E, password = %s",
+         password);
+
+    long long s = decrypt(password);
+//    LOGV("checkPasswordJni: s = %lld", s);
+    char str[256];
+    sprintf(str, "%lld", s);
+    int length = strlen(str);
+//    LOGV("checkPasswordJni: str = %s, length = %d", str, length);
+    int pw_checksum = str[0] - '0';
+//    LOGV("pw_checksum = %d", pw_checksum);
+    int pw_ps = ctoi(str[2]) + ctoi(str[1]) * 10;
+
+    int pw_pc = ctoi(str[8]) + ctoi(str[7]) * 10 + ctoi(str[6]) * 100 + ctoi(str[5]) * 1000 +
+                ctoi(str[4]) * 10000 + ctoi(str[3]) * 100000;
+    int f1 = ctoi(str[9]);
+    int f2 = ctoi(str[13]) + ctoi(str[12]) * 10 + ctoi(str[11]) * 100 + ctoi(str[10]) * 1000;
+//    LOGV("ps = %d, pc = %d, f1 = %d, f2 = %d", pw_ps, pw_pc, f1, f2);
+    int pw_permission = 0;
+    int totalMinute = 0;
+    if (f1 >= 5) {
+        pw_permission = 5;
+        totalMinute = (f1 - 5) * 10000 + f2;
+    } else {
+        pw_permission = 0;
+        totalMinute = f1 * 10000 + f2;
+    }
+//    LOGV("pw_permission = %d, totalMinute = %d", pw_permission, totalMinute);
+    int day = (totalMinute / MINUTES_IN_DAY) + 1;
+    totalMinute = totalMinute - ((day - 1) * MINUTES_IN_DAY);
+    int hour = totalMinute / MINUTES_IN_HOUR;
+    int minute = totalMinute % MINUTES_IN_HOUR;
+//    LOGV("day = %02d, hour = %02d, minute = %02d", day, hour, minute);
+
+    char num[16] = {0,};
+    sprintf(num, "%02d%06d%02d%02d%02d%d", pw_ps, pw_pc, day, hour, minute, pw_permission);
+    num[15] = '\0';
+//    LOGV("num = %s", num);
+
+    int checksum = generateChecksum(atoll(num));
+//    LOGV("checksum = %d", checksum);
+    int pw_device_id = 0;
+    if (pw_ps == RTS_FLAG) {
+        pw_device_id = RTS;
+    } else if (pw_ps >= PCOS_FLAG && pw_ps < RTS_FLAG) {
+        pw_device_id = PCOS;
+        pw_ps -= PCOS_FLAG;
+    } else {
+        pw_device_id = BVVD;
+    }
+
+    (*env)->ReleaseStringUTFChars(env, jPassword, password);
+
+    if (pw_checksum != checksum) {
+        LOGE("checksum is not matched, checksum = %d", checksum);
+        return NULL;
+    }
+
+    char output[128] = {0};
+    sprintf(&output, "%06d%02d", pw_pc, pw_ps);
+    result = (*env)->NewStringUTF(env, output);
+    return result;
+}
