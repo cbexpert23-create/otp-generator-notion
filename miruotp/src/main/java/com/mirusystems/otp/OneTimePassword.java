@@ -109,7 +109,6 @@ public class OneTimePassword {
         if (ret == null) {
             throw new OneTimePasswordException("Checksum is not matched.");
         }
-        Log.v(TAG, "getSeed: ret = " + ret);
         return ret;
     }
 

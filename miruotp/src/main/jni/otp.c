@@ -43,25 +43,18 @@ int strtoi(const char *str, int length) {
     return ret;
 }
 
-int index_password = 0;
 char password[11] = {0,};
 
 void encrypt(long long seed) {
-//    LOGV("encrypt: seed = %lld", seed);
-    if (seed < 26) {
-        password[index_password] = (char) seed + 'A';
-//        LOGV("encrypt: password[%d] = %c", index_password, password[index_password]);
-        index_password++;
-    } else {
-        long long q = seed / 26;
-        long long r = seed % 26;
-        encrypt(q);
-        encrypt(r);
+    for (int i = 0; i < 10; ++i) {
+        int r = seed % 26;
+        seed = seed / 26;
+        password[9-i] = (char) r + 'A';
     }
+    password[10] = 0;
 }
 
 long long decrypt(const char *password) {
-//    LOGV("decrypt: password = %s", password);
     long long seed = 0;
     int length = strlen(password);
     for (int i = 0; i < length; ++i) {
@@ -100,10 +93,11 @@ JNIEXPORT jstring JNICALL
 Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni(JNIEnv *env, jobject thiz,
                                                              jstring jSeed, jint deviceId,
                                                              jint permission) {
+    memset(password, 0, sizeof(password));
     const char *seed = NULL;
     seed = (*env)->GetStringUTFChars(env, jSeed, 0);
-    LOGV("Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni: E, seed = %s, deviceId = %d, permission = %d",
-         seed, deviceId, permission);
+//    LOGV("Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni: E, seed = %s, deviceId = %d, permission = %d",
+//         seed, deviceId, permission);
 
     int pollingCenter = strtoi(&seed[0], 6);
     int pollingStation = strtoi(&seed[6], 2);
@@ -141,15 +135,14 @@ Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni(JNIEnv *env, jobjec
 //    LOGV("num3 = %s", num);
     long long s = atoll(num);
 //    LOGV("s = %lld", s);
-    index_password = 0;
     encrypt(s);
-    LOGV("password = %s", password);
+//    LOGV("password = %s", password);
 
     (*env)->ReleaseStringUTFChars(env, jSeed, seed);
     return (*env)->NewStringUTF(env, password);
 }
 
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jint JNICALL
 Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni(JNIEnv *env, jobject thiz,
                                                           jstring jPassword, jstring jSeed,
                                                           jint deviceId, jint permission) {
@@ -158,24 +151,24 @@ Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni(JNIEnv *env, jobject t
 
     password = (*env)->GetStringUTFChars(env, jPassword, 0);
     seed = (*env)->GetStringUTFChars(env, jSeed, 0);
-    LOGV("Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni: E, password = %s, seed = %s, permission = %d",
-         password, seed, permission);
+//    LOGV("Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni: E, password = %s, seed = %s, permission = %d",
+//         password, seed, permission);
 
     long long s = decrypt(password);
 //    LOGV("checkPasswordJni: s = %lld", s);
     char str[256];
-    sprintf(str, "%lld", s);
+    sprintf(str, "%014lld", s);
     int length = strlen(str);
 //    LOGV("checkPasswordJni: str = %s, length = %d", str, length);
     int pw_checksum = str[0] - '0';
-//    LOGV("pw_checksum = %d", pw_checksum);
+//    LOGV("checkPasswordJni: pw_checksum = %d", pw_checksum);
     int pw_ps = ctoi(str[2]) + ctoi(str[1]) * 10;
 
     int pw_pc = ctoi(str[8]) + ctoi(str[7]) * 10 + ctoi(str[6]) * 100 + ctoi(str[5]) * 1000 +
                 ctoi(str[4]) * 10000 + ctoi(str[3]) * 100000;
     int f1 = ctoi(str[9]);
     int f2 = ctoi(str[13]) + ctoi(str[12]) * 10 + ctoi(str[11]) * 100 + ctoi(str[10]) * 1000;
-//    LOGV("ps = %d, pc = %d, f1 = %d, f2 = %d", pw_ps, pw_pc, f1, f2);
+//    LOGV("checkPasswordJni: ps = %d, pc = %d, f1 = %d, f2 = %d", pw_ps, pw_pc, f1, f2);
     int pw_permission = 0;
     int totalMinute = 0;
     if (f1 >= 5) {
@@ -185,20 +178,20 @@ Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni(JNIEnv *env, jobject t
         pw_permission = 0;
         totalMinute = f1 * 10000 + f2;
     }
-//    LOGV("pw_permission = %d, totalMinute = %d", pw_permission, totalMinute);
+//    LOGV("checkPasswordJni: pw_permission = %d, totalMinute = %d", pw_permission, totalMinute);
     int day = (totalMinute / MINUTES_IN_DAY) + 1;
     totalMinute = totalMinute - ((day - 1) * MINUTES_IN_DAY);
     int hour = totalMinute / MINUTES_IN_HOUR;
     int minute = totalMinute % MINUTES_IN_HOUR;
-//    LOGV("day = %02d, hour = %02d, minute = %02d", day, hour, minute);
+//    LOGV("checkPasswordJni: day = %02d, hour = %02d, minute = %02d", day, hour, minute);
 
     char num[16] = {0,};
     sprintf(num, "%02d%06d%02d%02d%02d%d", pw_ps, pw_pc, day, hour, minute, pw_permission);
     num[15] = '\0';
-//    LOGV("num = %s", num);
+//    LOGV("checkPasswordJni: num = %s", num);
 
     int checksum = generateChecksum(atoll(num));
-//    LOGV("checksum = %d", checksum);
+//    LOGV("checkPasswordJni: checksum = %d", checksum);
     int pw_device_id = 0;
     if (pw_ps == RTS_FLAG) {
         pw_device_id = RTS;
@@ -246,24 +239,24 @@ Java_com_mirusystems_otp_OneTimePassword_getSeedJni(JNIEnv *env, jobject thiz,
     const char *password = NULL;
 
     password = (*env)->GetStringUTFChars(env, jPassword, 0);
-    LOGV("Java_com_mirusystems_otp_OneTimePassword_getSeedJni: E, password = %s",
-         password);
+//    LOGV("Java_com_mirusystems_otp_OneTimePassword_getSeedJni: E, password = %s",
+//         password);
 
     long long s = decrypt(password);
-//    LOGV("checkPasswordJni: s = %lld", s);
+//    LOGV("getSeedJni: s = %014lld", s);
     char str[256];
-    sprintf(str, "%lld", s);
+    sprintf(str, "%014lld", s);
     int length = strlen(str);
-//    LOGV("checkPasswordJni: str = %s, length = %d", str, length);
+//    LOGV("getSeedJni: str = %s, length = %d", str, length);
     int pw_checksum = str[0] - '0';
-//    LOGV("pw_checksum = %d", pw_checksum);
+//    LOGV("getSeedJni: pw_checksum = %d", pw_checksum);
     int pw_ps = ctoi(str[2]) + ctoi(str[1]) * 10;
 
     int pw_pc = ctoi(str[8]) + ctoi(str[7]) * 10 + ctoi(str[6]) * 100 + ctoi(str[5]) * 1000 +
                 ctoi(str[4]) * 10000 + ctoi(str[3]) * 100000;
     int f1 = ctoi(str[9]);
     int f2 = ctoi(str[13]) + ctoi(str[12]) * 10 + ctoi(str[11]) * 100 + ctoi(str[10]) * 1000;
-//    LOGV("ps = %d, pc = %d, f1 = %d, f2 = %d", pw_ps, pw_pc, f1, f2);
+//    LOGV("getSeedJni: ps = %d, pc = %d, f1 = %d, f2 = %d", pw_ps, pw_pc, f1, f2);
     int pw_permission = 0;
     int totalMinute = 0;
     if (f1 >= 5) {
@@ -273,20 +266,20 @@ Java_com_mirusystems_otp_OneTimePassword_getSeedJni(JNIEnv *env, jobject thiz,
         pw_permission = 0;
         totalMinute = f1 * 10000 + f2;
     }
-//    LOGV("pw_permission = %d, totalMinute = %d", pw_permission, totalMinute);
+//    LOGV("getSeedJni: pw_permission = %d, totalMinute = %d", pw_permission, totalMinute);
     int day = (totalMinute / MINUTES_IN_DAY) + 1;
     totalMinute = totalMinute - ((day - 1) * MINUTES_IN_DAY);
     int hour = totalMinute / MINUTES_IN_HOUR;
     int minute = totalMinute % MINUTES_IN_HOUR;
-//    LOGV("day = %02d, hour = %02d, minute = %02d", day, hour, minute);
+//    LOGV("getSeedJni: day = %02d, hour = %02d, minute = %02d", day, hour, minute);
 
     char num[16] = {0,};
     sprintf(num, "%02d%06d%02d%02d%02d%d", pw_ps, pw_pc, day, hour, minute, pw_permission);
     num[15] = '\0';
-//    LOGV("num = %s", num);
+//    LOGV("getSeedJni: num = %s", num);
 
     int checksum = generateChecksum(atoll(num));
-//    LOGV("checksum = %d", checksum);
+//    LOGV("getSeedJni: checksum = %d", checksum);
     int pw_device_id = 0;
     if (pw_ps == RTS_FLAG) {
         pw_device_id = RTS;
