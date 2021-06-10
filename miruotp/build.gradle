@@ -6,10 +6,12 @@ android {
     defaultConfig {
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 102
-        versionName "1.02"
+        versionCode 103
+        versionName "1.03"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+        project.archivesBaseName = "miruotp"
+        project.version = android.defaultConfig.versionName
     }
     buildTypes {
         release {
@@ -26,11 +28,13 @@ android {
             path "CMakeLists.txt"
         }
     }
+    android.libraryVariants.all { variant ->
+        variant.outputs.all {
+            def formattedDate = new Date().format('yyyyMMdd')
+            outputFileName = "${archivesBaseName}_v${version}_${formattedDate}.aar"
+        }
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
