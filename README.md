@@ -25,12 +25,12 @@ public String generatePassword(String seed, int deviceId, int permission)
 
 #### seed
 
-- BVVD, PCOS: polling center + polling station ex) "105201" + "01" = "10520101"
+- VVD, PCOS: polling center + polling station ex) "105201" + "01" = "10520101"
 - RTS: imei 중 가운데 6자리 + "80" ex) "800008" + "80" = "80000880"
 
 #### deviceId
 
-- BVVD: 1
+- VVD: 1
 - PCOS: 2
 - RTS: 3
 
@@ -62,12 +62,12 @@ public boolean checkPassword(String password, String seed, int deviceId, int per
 
 #### seed
 
-- BVVD, PCOS: polling center + polling station ex) "105201" + "01" = "10520101"
+- VVD, PCOS: polling center + polling station ex) "105201" + "01" = "10520101"
 - RTS: imei 중 가운데 6자리 + "80" ex) "800008" + "80" = "80000880"
 
 #### deviceId
 
-- BVVD: 1
+- VVD: 1
 - PCOS: 2
 - RTS: 3
 
