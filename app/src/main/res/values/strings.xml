@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">otp</string>
     <string-array name="devices">
-        <item>BVVD</item>
+        <item>VVD</item>
         <item>PCOS</item>
         <item>RTS</item>
     </string-array>
