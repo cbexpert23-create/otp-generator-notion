@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void onDeviceIdSelected(int deviceId) {
         switch (deviceId) {
-            case OneTimePassword.BVVD:
+            case OneTimePassword.VVD:
             case OneTimePassword.PCOS: {
                 pollingCenterLayout.setVisibility(View.VISIBLE);
                 imeiLayout.setVisibility(View.INVISIBLE);

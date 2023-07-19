@@ -13,7 +13,7 @@ public class OneTimePassword {
     public static final int ERR_PERMISSION = -3;
     public static final int ERR_DEVICE = -4;
 
-    public static final int BVVD = 1;
+    public static final int VVD = 1;
     public static final int PCOS = 2;
     public static final int RTS = 3;
 
@@ -123,7 +123,7 @@ public class OneTimePassword {
     }
 
     private boolean isSupportedDevice(int deviceId) {
-        return deviceId == BVVD || deviceId == PCOS || deviceId == RTS;
+        return deviceId == VVD || deviceId == PCOS || deviceId == RTS;
     }
 
     private boolean isSupportedPermission(int permission) {
