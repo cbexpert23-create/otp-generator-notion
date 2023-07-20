@@ -1,182 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:onClick="onClick"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
-        android:id="@+id/layout_polling_center"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.mirusystems.otp.MainActivity">
 
         <EditText
-            android:id="@+id/edit_polling_center"
+            android:id="@+id/pollingStationEdit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:maxLength="6"
-            android:nextFocusDown="@id/edit_polling_station"
+            android:hint="polling station id (8 digits)"
+            android:inputType="number"
+            android:maxLength="8"
             android:textSize="32sp"
+            app:layout_constraintEnd_toStartOf="@+id/randomNumberEdit"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="-"
-            android:textSize="48sp" />
-
         <EditText
-            android:id="@+id/edit_polling_station"
+            android:id="@+id/randomNumberEdit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:ems="10"
-            android:inputType="numberDecimal"
+            android:hint="random number (2 digits)"
+            android:inputType="number"
             android:maxLength="2"
             android:textSize="32sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/pollingStationEdit"
             app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_imei"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <EditText
-            android:id="@+id/edit_imei1"
+        <RadioGroup
+            android:id="@+id/deviceGroup"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:maxLength="8"
-            android:nextFocusDown="@id/edit_imei2"
-            android:textSize="32sp"
+            android:checkedButton="@+id/vvdButton"
+            app:layout_constraintEnd_toStartOf="@+id/permissionGroup"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/pollingStationEdit">
+
+            <RadioButton
+                android:id="@+id/vvdButton"
+                android:layout_width="match_parent"
+                android:text="VVD"
+                android:textSize="32sp" />
+
+            <RadioButton
+                android:id="@+id/pcosButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="PCOS"
+                android:textSize="32sp" />
+
+            <RadioButton
+                android:id="@+id/rtsButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="RTS"
+                android:textSize="32sp" />
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/permissionGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:checkedButton="@+id/adminButton"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/deviceGroup"
+            app:layout_constraintTop_toBottomOf="@+id/pollingStationEdit">
+
+            <RadioButton
+                android:id="@+id/adminButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="ADMIN"
+                android:textSize="32sp" />
+
+            <RadioButton
+                android:id="@+id/superAdminButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="SUPER ADMIN"
+                android:textSize="32sp" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/generateButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="generate password"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/deviceGroup" />
+
+        <EditText
+            android:id="@+id/passwordEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:maxLength="10"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/generateButton" />
+
+        <Button
+            android:id="@+id/checkButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="check password"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/passwordEdit" />
 
         <TextView
-            android:layout_width="20dp"
+            android:id="@+id/resultText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="-"
-            android:textSize="48sp" />
-
-        <EditText
-            android:id="@+id/edit_imei2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:maxLength="6"
-            android:nextFocusDown="@id/edit_imei3"
             android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="-"
-            android:textSize="48sp" />
-
-        <EditText
-            android:id="@+id/edit_imei3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:maxLength="1"
-            android:textSize="32sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
-
-    <Spinner
-        android:id="@+id/spinner_devices"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:entries="@array/devices"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_imei" />
-
-    <Spinner
-        android:id="@+id/spinner_permissions"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:entries="@array/permissions"
-        app:layout_constraintEnd_toEndOf="@+id/spinner_devices"
-        app:layout_constraintStart_toStartOf="@+id/spinner_devices"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_devices" />
-
-    <Button
-        android:id="@+id/button_generate_password"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:onClick="onClick"
-        android:text="generate password"
-        android:textSize="32sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_permissions" />
-
-    <EditText
-        android:id="@+id/edit_password"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:inputType="textNoSuggestions"
-        android:textSize="32sp"
-        app:layout_constraintEnd_toEndOf="@+id/spinner_permissions"
-        app:layout_constraintStart_toStartOf="@+id/spinner_permissions"
-        app:layout_constraintTop_toBottomOf="@+id/button_generate_password" />
-
-    <Button
-        android:id="@+id/button_check_password"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:onClick="onClick"
-        android:text="check password"
-        android:textSize="32sp"
-        app:layout_constraintEnd_toEndOf="@+id/button_generate_password"
-        app:layout_constraintStart_toStartOf="@+id/button_generate_password"
-        app:layout_constraintTop_toBottomOf="@+id/edit_password" />
-
-    <TextView
-        android:id="@+id/text_result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:textSize="32sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_check_password" />
+            app:layout_constraintTop_toBottomOf="@+id/checkButton" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
