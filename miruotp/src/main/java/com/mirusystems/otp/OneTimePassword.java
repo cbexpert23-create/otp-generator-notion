@@ -43,16 +43,20 @@ public class OneTimePassword {
     //    public static final String ERROR_PASSWORD_NOT_UPPERCASE = "Passwords should only use uppercase letters.";
     public static final String ERROR_PASSWORD_NOT_DIGIT = "The password must consist only of numbers.";
     public static final String ERROR_CHECKSUM_NOT_MATCH = "Checksum is not matched.";
+    public static final String ERROR_RANDOM_NUMBER_NULL = "Random number must not be null.";
+    public static final String ERROR_RANDOM_NUMBER_LENGTH = "The length of the random number  must be 2.";
+    public static final String ERROR_RANDOM_NUMBER_NOT_DIGIT = "The random number  must consist only of numbers.";
+    public static final String ERROR_RANDOM_NUMBER_EXHAUSTED = "All random numbers are exhausted.";
 
     private static final String KEY_USED_PASSWORDS = "used_passwords";
     private static final String KEY_RANDOM_NUMBERS = "random_numbers";
     private static final int RANDOM_NUMBER_SIZE = 100;
 
 
-    private Context context;
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor editor;
-    private Random random = new Random();
+    private final Context context;
+    private final SharedPreferences preferences;
+    private final SharedPreferences.Editor editor;
+    private final Random random = new Random();
 
     public OneTimePassword(Context context) {
         this.context = context;
@@ -65,32 +69,42 @@ public class OneTimePassword {
         }
     }
 
-    public String generateRandomNumber() {
+    public String generateRandomNumber() throws OneTimePasswordException {
         String s = preferences.getString(KEY_RANDOM_NUMBERS, null);
-        if (s != null) {
+        if (s != null && s.length() > 0) {
             List<String> numberList = new ArrayList<>(Arrays.asList(s.split(",")));
+            Log.v(TAG, "generateRandomNumber: numberList = " + numberList.size());
             if (!numberList.isEmpty()) {
                 int index = random.nextInt(numberList.size());
                 Log.v(TAG, "generateRandomNumber: index = " + index);
                 String number = numberList.get(index);
+                Log.v(TAG, "generateRandomNumber: number = " + number);
                 numberList.remove(index);
+                Log.v(TAG, "generateRandomNumber: removed, numberList = " + numberList.size());
                 setRandomNumbers(numberList);
+                if (number.length() == 1) {
+                    number = "0" + number;
+                }
                 return number;
             }
         }
-        return null;
+        throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_EXHAUSTED);
     }
 
     private void setRandomNumbers(List<String> randomList) {
-        editor.putString(KEY_RANDOM_NUMBERS, String.join(",", randomList));
+        if (randomList.isEmpty()) {
+            editor.putString(KEY_RANDOM_NUMBERS, "");
+        } else {
+            editor.putString(KEY_RANDOM_NUMBERS, String.join(",", randomList));
+        }
         editor.apply();
     }
 
-    public String generatePassword(String seed, int deviceId, int permission) throws OneTimePasswordException {
+    public String generatePassword(String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
         if (seed == null) {
             throw new OneTimePasswordException(ERROR_SEED_NULL);
         }
-        if (seed.length() != 10) { // polling_station_id (8) + random_number (2)
+        if (seed.length() != 8) {
             throw new OneTimePasswordException(ERROR_SEED_LENGTH);
         }
         try {
@@ -105,11 +119,23 @@ public class OneTimePassword {
         if (!isSupportedPermission(permission)) {
             throw new OneTimePasswordException(ERROR_UNKNOWN_PERMISSION);
         }
+        if (salt == null) {
+            throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NULL);
+        }
+        if (salt.length() != 2) {
+            throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_LENGTH);
+        }
+        try {
+            long s = Long.parseLong(salt);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NOT_DIGIT);
+        }
 
-        return generatePasswordJni(seed, deviceId, permission);
+        return generatePasswordJni(seed, deviceId, permission, salt);
     }
 
-    public boolean checkPassword(String password, String seed, int deviceId, int permission) throws OneTimePasswordException {
+    public boolean checkPassword(String password, String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
         if (password == null) {
             throw new OneTimePasswordException(ERROR_PASSWORD_NULL);
         }
@@ -128,7 +154,7 @@ public class OneTimePassword {
         if (seed == null) {
             throw new OneTimePasswordException(ERROR_SEED_NULL);
         }
-        if (seed.length() != 10) {
+        if (seed.length() != 8) {
             throw new OneTimePasswordException(ERROR_SEED_LENGTH);
         }
         try {
@@ -143,14 +169,23 @@ public class OneTimePassword {
         if (!isSupportedPermission(permission)) {
             throw new OneTimePasswordException(ERROR_UNKNOWN_PERMISSION);
         }
-
-        int ret = checkPasswordJni(password, seed, deviceId, permission);
-        if (ret == SUCCESS) {
-            addUsedPassword(password);
-            return true;
-        } else {
-            return false;
+        if (salt == null) {
+            throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NULL);
         }
+        if (salt.length() != 2) {
+            throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_LENGTH);
+        }
+        try {
+            long s = Long.parseLong(salt);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NOT_DIGIT);
+        }
+        boolean ret = checkPasswordJni(password, seed, deviceId, permission, salt);
+        if (ret) {
+            addUsedPassword(password);
+        }
+        return ret;
     }
 
     public void resetPassword() {
@@ -215,8 +250,8 @@ public class OneTimePassword {
         return true;
     }
 
-    private static String generatePasswordJni(String seed, int deviceId, int permission) throws OneTimePasswordException {
-        String input = String.format(Locale.ENGLISH, "%s%02d%02d", seed, deviceId, permission);
+    private static String generatePasswordJni(String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
+        String input = String.format(Locale.ENGLISH, "%s%02d%02d%sd", seed, deviceId, permission, salt);
         try {
             byte[] hash = sha256(input.getBytes(StandardCharsets.UTF_8));
             BigInteger bigIntegerHash = new BigInteger(1, hash);
@@ -243,13 +278,9 @@ public class OneTimePassword {
         }
     }
 
-    private static int checkPasswordJni(String password, String seed, int deviceId, int permission) throws OneTimePasswordException {
-        String compare = generatePasswordJni(seed, deviceId, permission);
-        if (password.equals(compare)) {
-            return SUCCESS;
-        }
-
-        return ERR_CHECKSUM;
+    private static boolean checkPasswordJni(String password, String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
+        String compare = generatePasswordJni(seed, deviceId, permission, salt);
+        return password.equals(compare);
     }
 
     private static byte[] sha256(byte[] input) throws NoSuchAlgorithmException {

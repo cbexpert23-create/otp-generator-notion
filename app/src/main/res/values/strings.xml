@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">otp</string>
+    <string name="app_name">OTP 2.0.0</string>
     <string-array name="devices">
         <item>VVD</item>
         <item>PCOS</item>

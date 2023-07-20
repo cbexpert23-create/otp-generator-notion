@@ -1,6 +1,7 @@
 package com.mirusystems.otp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -12,21 +13,25 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
-import com.mirusystems.otp.databinding.ActivityMainBinding;
+import com.mirusystems.otp.databinding.ActivitySampleBinding;
 
-public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-
-    private ActivityMainBinding binding;
+public class SampleActivity extends AppCompatActivity {
+    private static final String TAG = "SampleActivity";
+    private ActivitySampleBinding binding;
     private OneTimePassword oneTimePassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_sample);
+
         binding.rootLayout.setOnTouchListener((v, event) -> {
             ActivityUtils.hideKeyboard(this);
             return false;
+        });
+        binding.generateRandomButton.setOnClickListener(v -> {
+            onSeedTextChanged();
+            generateRandomNumber();
         });
         binding.pollingStationEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -43,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 onSeedTextChanged();
             }
         });
-        binding.randomNumberEdit.addTextChangedListener(new TextWatcher() {
+        binding.passwordEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -69,10 +74,11 @@ public class MainActivity extends AppCompatActivity {
             onDeviceIdSelected(deviceId);
         });
         binding.permissionGroup.setOnCheckedChangeListener((group, checkedId) -> Log.v(TAG, "onCheckedChanged: group = [" + group + "], checkedId = [" + checkedId + "]"));
-        binding.generateButton.setOnClickListener(v -> generatePassword());
 
-//        binding.passwordEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        binding.checkButton.setOnClickListener(v -> checkPassword());
         onDeviceIdSelected(OneTimePassword.VVD);
+
+        binding.resetButton.setOnClickListener(v -> resetPassword());
 
         Context context = getApplicationContext();
         oneTimePassword = new OneTimePassword(context);
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setTitle("GENERATOR " + BuildConfig.VERSION_NAME);
+        setTitle("SAMPLE APP " + BuildConfig.VERSION_NAME);
     }
 
     @Override
@@ -95,18 +101,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     private void onSeedTextChanged() {
         String pollingStationId = binding.pollingStationEdit.getText().toString();
         String randomNumber = binding.randomNumberEdit.getText().toString();
-        if (pollingStationId != null && randomNumber != null) {
+        String password = binding.passwordEdit.getText().toString();
+        if (pollingStationId != null && randomNumber != null && password != null) {
             int deviceId = getDeviceId();
             if (deviceId == OneTimePassword.RTS) {
-                if (pollingStationId.length() == 6 && randomNumber.length() == 2) {
+                if (pollingStationId.length() == 6 && randomNumber.length() == 2 && password.length() == 10) {
                     setButtonEnabled(true);
                     return;
                 }
             } else {
-                if (pollingStationId.length() == 8 && randomNumber.length() == 2) {
+                if (pollingStationId.length() == 8 && randomNumber.length() == 2 && password.length() == 10) {
                     setButtonEnabled(true);
                     return;
                 }
@@ -117,25 +125,49 @@ public class MainActivity extends AppCompatActivity {
 
     private void setButtonEnabled(boolean enabled) {
         runOnUiThread(() -> {
-            binding.generateButton.setEnabled(enabled);
+            binding.checkButton.setEnabled(enabled);
         });
     }
 
-    private void generatePassword() {
+    private void generateRandomNumber() {
+        try {
+            String random = oneTimePassword.generateRandomNumber();
+            binding.randomNumberEdit.setText(random);
+        } catch (OneTimePasswordException e) {
+            e.printStackTrace();
+            binding.randomNumberEdit.setText("");
+            binding.resultText.setText(e.getMessage());
+            binding.resultText.setTextColor(Color.RED);
+        }
+    }
+
+    private void resetPassword() {
+        oneTimePassword.resetPassword();
+    }
+
+    private void checkPassword() {
+        String password = binding.passwordEdit.getText().toString();
         String seed = getSeed();
         int deviceId = getDeviceId();
         int permission = getPermission();
         String randomNumber = binding.randomNumberEdit.getText().toString();
         try {
-            String password = oneTimePassword.generatePassword(seed, deviceId, permission, randomNumber);
-            Log.v(TAG, "generatePassword: password = " + password);
-            password = String.format("%s-%s-%s", password.substring(0, 3), password.substring(3, 6), password.substring(6));
-            Log.v(TAG, "generatePassword: password = " + password);
-            binding.passwordText.setText(password);
+            boolean success = oneTimePassword.checkPassword(password, seed, deviceId, permission, randomNumber);
+            Log.v(TAG, "onClick: button_check_password: success = " + success);
+            if (success) {
+                binding.resultText.setText("success");
+                binding.resultText.setTextColor(Color.DKGRAY);
+            } else {
+                binding.resultText.setText("fail");
+                binding.resultText.setTextColor(Color.RED);
+            }
         } catch (OneTimePasswordException e) {
             e.printStackTrace();
+            binding.resultText.setText(e.getMessage());
+            binding.resultText.setTextColor(Color.RED);
         }
     }
+
 
     private int getDeviceId() {
         switch (binding.deviceGroup.getCheckedRadioButtonId()) {
@@ -165,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
         return seed;
     }
 
-
     private void onDeviceIdSelected(int deviceId) {
         switch (deviceId) {
             case OneTimePassword.VVD:
@@ -187,5 +218,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }
