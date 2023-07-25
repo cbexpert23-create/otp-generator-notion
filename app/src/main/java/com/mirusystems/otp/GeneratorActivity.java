@@ -101,12 +101,12 @@ public class GeneratorActivity extends AppCompatActivity {
         if (pollingStationId != null && randomNumber != null) {
             int deviceId = getDeviceId();
             if (deviceId == OneTimePassword.RTS) {
-                if (pollingStationId.length() == 6 && randomNumber.length() == 2) {
+                if (pollingStationId.length() == 6 && randomNumber.length() == 3) {
                     setButtonEnabled(true);
                     return;
                 }
             } else {
-                if (pollingStationId.length() == 8 && randomNumber.length() == 2) {
+                if (pollingStationId.length() == 8 && randomNumber.length() == 3) {
                     setButtonEnabled(true);
                     return;
                 }

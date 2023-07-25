@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="The number below is an automatically generated random number (two digits). Inform the OTP administrator of your polling place ID, random number, and required privileges and receive a corresponding password. Users only see the random number, the password input screen, and the CONFIRM button. Polling station ID and permissions must be entered by the developer."
+            android:text="The number below is an automatically generated random number (3 digits). Inform the OTP administrator of your polling place ID, random number, and required privileges and receive a corresponding password. Users only see the random number, the password input screen, and the CONFIRM button. Polling station ID and permissions must be entered by the developer."
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -55,7 +55,7 @@
                 android:id="@+id/pollingStationEdit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="polling station id (8 digits)"
+                android:hint="Polling station ID (8 digits)"
                 android:inputType="number"
                 android:maxLength="8"
                 android:textSize="24sp"

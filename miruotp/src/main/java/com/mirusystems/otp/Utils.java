@@ -12,7 +12,7 @@ public class Utils {
     private static final String TAG = "Utils";
 
     static String generatePassword(String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
-        String input = String.format(Locale.ENGLISH, "2023OTP%s%02d%02d%sd", seed, deviceId, permission, salt);
+        String input = String.format(Locale.ENGLISH, "2023OTP%s%02d%02d%s", seed, deviceId, permission, salt);
         try {
             byte[] hash = sha256(input.getBytes(StandardCharsets.UTF_8));
             BigInteger bigIntegerHash = new BigInteger(1, hash);

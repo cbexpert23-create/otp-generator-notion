@@ -102,12 +102,12 @@ public class PcosActivity extends AppCompatActivity {
         if (pollingStationId != null && randomNumber != null && password != null) {
             int deviceId = getDeviceId();
             if (deviceId == OneTimePassword.RTS) {
-                if (pollingStationId.length() == 6 && randomNumber.length() == 2 && password.length() == 10) {
+                if (pollingStationId.length() == 6 && password.length() == 10) {
                     setButtonEnabled(true);
                     return;
                 }
             } else {
-                if (pollingStationId.length() == 8 && randomNumber.length() == 2 && password.length() == 10) {
+                if (pollingStationId.length() == 8 && password.length() == 10) {
                     setButtonEnabled(true);
                     return;
                 }

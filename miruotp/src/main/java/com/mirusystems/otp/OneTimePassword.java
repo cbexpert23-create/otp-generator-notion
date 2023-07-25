@@ -45,7 +45,7 @@ public class OneTimePassword {
 
     private static final String KEY_USED_PASSWORDS = "used_passwords";
     private static final String KEY_RANDOM_NUMBERS = "random_numbers";
-    private static final int RANDOM_NUMBER_SIZE = 100;
+    private static final int RANDOM_NUMBER_SIZE = 1000;
 
 
     private final Context context;
@@ -78,6 +78,8 @@ public class OneTimePassword {
                 Log.v(TAG, "generateRandomNumber: removed, numberList = " + numberList.size());
                 setRandomNumbers(numberList);
                 if (number.length() == 1) {
+                    number = "00" + number;
+                } else if (number.length() == 2) {
                     number = "0" + number;
                 }
                 return number;
@@ -117,7 +119,7 @@ public class OneTimePassword {
         if (salt == null) {
             throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NULL);
         }
-        if (salt.length() != 2) {
+        if (salt.length() != 3) {
             throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_LENGTH);
         }
         try {
@@ -167,7 +169,7 @@ public class OneTimePassword {
         if (salt == null) {
             throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NULL);
         }
-        if (salt.length() != 2) {
+        if (salt.length() != 3) {
             throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_LENGTH);
         }
         try {
