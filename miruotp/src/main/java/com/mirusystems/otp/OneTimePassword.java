@@ -4,14 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -132,7 +127,7 @@ public class OneTimePassword {
             throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NOT_DIGIT);
         }
 
-        return generatePasswordJni(seed, deviceId, permission, salt);
+        return Utils.generatePassword(seed, deviceId, permission, salt);
     }
 
     public boolean checkPassword(String password, String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
@@ -181,7 +176,7 @@ public class OneTimePassword {
             e.printStackTrace();
             throw new OneTimePasswordException(ERROR_RANDOM_NUMBER_NOT_DIGIT);
         }
-        boolean ret = checkPasswordJni(password, seed, deviceId, permission, salt);
+        boolean ret = Utils.checkPassword(password, seed, deviceId, permission, salt);
         if (ret) {
             addUsedPassword(password);
         }
@@ -250,51 +245,14 @@ public class OneTimePassword {
         return true;
     }
 
-    private static String generatePasswordJni(String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
-        String input = String.format(Locale.ENGLISH, "%s%02d%02d%sd", seed, deviceId, permission, salt);
-        try {
-            byte[] hash = sha256(input.getBytes(StandardCharsets.UTF_8));
-            BigInteger bigIntegerHash = new BigInteger(1, hash);
 
-            String str = bigIntegerHash.toString(10);
-            Log.v(TAG, "generatePasswordJni: str = " + str);
-            String[] numbers = new String[3];
-            BigInteger sum = BigInteger.ZERO;
-            for (int i = 0; i < numbers.length; i++) {
-                numbers[i] = str.substring(i * 10, i * 10 + 10);
-                Log.v(TAG, "generatePasswordJni: numbers = " + numbers[i]);
-                sum = sum.add(new BigInteger(numbers[i]));
-            }
-            String output = sum.toString(10);
-            Log.v(TAG, "generatePasswordJni: output = " + output + ", " + output.length());
-            if (output.length() > 10) {
-                return output.substring(1);
-            } else {
-                return output;
-            }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new OneTimePasswordException(e.getMessage());
-        }
+    static {
+        System.loadLibrary("miruotp");
     }
 
-    private static boolean checkPasswordJni(String password, String seed, int deviceId, int permission, String salt) throws OneTimePasswordException {
-        String compare = generatePasswordJni(seed, deviceId, permission, salt);
-        return password.equals(compare);
-    }
+    private native String generatePasswordJni(String seed, int deviceId, int permission, String salt);
 
-    private static byte[] sha256(byte[] input) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        return md.digest(input);
-    }
+    private native int checkPasswordJni(String password, String seed, int deviceId, int permission, String salt);
 
-//    static {
-//        System.loadLibrary("miruotp");
-//    }
-
-//    private native String generatePasswordJni(String seed, int deviceId, int permission);
-//
-//    private native int checkPasswordJni(String password, String seed, int deviceId, int permission);
-//
-//    private native String getSeedJni(String password);
+    private native String getSeedJni(String password);
 }

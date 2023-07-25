@@ -49,7 +49,7 @@ void encrypt(long long seed) {
     for (int i = 0; i < 10; ++i) {
         int r = seed % 26;
         seed = seed / 26;
-        password[9-i] = (char) r + 'A';
+        password[9 - i] = (char) r + 'A';
     }
     password[10] = 0;
 }
@@ -89,13 +89,17 @@ int getMinutes(int day, int hour, int minute) {
     return totalMinutes;
 }
 
+
+
 JNIEXPORT jstring JNICALL
 Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni(JNIEnv *env, jobject thiz,
                                                              jstring jSeed, jint deviceId,
-                                                             jint permission) {
+                                                             jint permission, jstring jSalt) {
     memset(password, 0, sizeof(password));
     const char *seed = NULL;
+    const char *salt = NULL;
     seed = (*env)->GetStringUTFChars(env, jSeed, 0);
+    salt = (*env)->GetStringUTFChars(env, jSalt, 0);
 //    LOGV("Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni: E, seed = %s, deviceId = %d, permission = %d",
 //         seed, deviceId, permission);
 
@@ -145,7 +149,7 @@ Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni(JNIEnv *env, jobjec
 JNIEXPORT jint JNICALL
 Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni(JNIEnv *env, jobject thiz,
                                                           jstring jPassword, jstring jSeed,
-                                                          jint deviceId, jint permission) {
+                                                          jint deviceId, jint permission, jstring jSalt) {
     const char *password = NULL;
     const char *seed = NULL;
 

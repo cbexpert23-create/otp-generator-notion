@@ -16,6 +16,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
+        src/main/jni/sha256.c
         src/main/jni/otp.c
         )
 

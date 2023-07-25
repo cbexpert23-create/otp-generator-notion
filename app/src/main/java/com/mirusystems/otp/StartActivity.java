@@ -18,8 +18,8 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_start);
 
-        binding.generateActivityButton.setOnClickListener(v -> nextActivity(MainActivity.class));
-        binding.checkActivityButton.setOnClickListener(v -> nextActivity(SampleActivity.class));
+        binding.generatorButton.setOnClickListener(v -> nextActivity(GeneratorActivity.class));
+        binding.pcosButton.setOnClickListener(v -> nextActivity(PcosActivity.class));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

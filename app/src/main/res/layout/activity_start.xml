@@ -13,27 +13,29 @@
         tools:context=".StartActivity">
 
         <Button
-            android:id="@+id/generateActivityButton"
+            android:id="@+id/generatorButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="generate"
+            android:text="generator"
             android:textSize="32sp"
-            app:layout_constraintBottom_toTopOf="@+id/checkActivityButton"
+            app:layout_constraintBottom_toTopOf="@+id/pcosButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <Button
-            android:id="@+id/checkActivityButton"
+            android:id="@+id/pcosButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="check"
+            android:text="PCOS sample"
             android:textSize="32sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/generateActivityButton" />
+            app:layout_constraintTop_toBottomOf="@+id/generatorButton" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

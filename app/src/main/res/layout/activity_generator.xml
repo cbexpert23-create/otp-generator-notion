@@ -11,47 +11,35 @@
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".SampleActivity">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        tools:context="com.mirusystems.otp.GeneratorActivity">
 
         <EditText
             android:id="@+id/pollingStationEdit"
-            android:layout_width="371dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:hint="polling station id (8 digits)"
             android:inputType="number"
             android:maxLength="8"
-            android:textSize="32sp"
+            android:textSize="24sp"
             app:layout_constraintEnd_toStartOf="@+id/randomNumberEdit"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <EditText
             android:id="@+id/randomNumberEdit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="random (2 digits)"
-            android:textSize="32sp"
-            app:layout_constraintBottom_toBottomOf="@+id/pollingStationEdit"
-            app:layout_constraintEnd_toStartOf="@+id/generateRandomButton"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/pollingStationEdit"
-            app:layout_constraintTop_toTopOf="@+id/pollingStationEdit" />
-
-        <Button
-            android:id="@+id/generateRandomButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="random"
-            android:textSize="32sp"
-            app:layout_constraintBottom_toBottomOf="@+id/pollingStationEdit"
+            android:hint="random number (2 digits)"
+            android:inputType="number"
+            android:maxLength="2"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/randomNumberEdit"
-            app:layout_constraintTop_toTopOf="@+id/pollingStationEdit" />
+            app:layout_constraintStart_toEndOf="@+id/pollingStationEdit"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup
             android:id="@+id/deviceGroup"
@@ -67,21 +55,21 @@
                 android:id="@+id/vvdButton"
                 android:layout_width="match_parent"
                 android:text="VVD"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
 
             <RadioButton
                 android:id="@+id/pcosButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="PCOS"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
 
             <RadioButton
                 android:id="@+id/rtsButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="RTS"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
         </RadioGroup>
 
         <RadioGroup
@@ -89,7 +77,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:checkedButton="@+id/adminButton"
-            android:textSize="32sp"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/deviceGroup"
@@ -100,58 +88,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="ADMIN"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
 
             <RadioButton
                 android:id="@+id/superAdminButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="SUPER ADMIN"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
         </RadioGroup>
 
-
-        <EditText
-            android:id="@+id/passwordEdit"
+        <Button
+            android:id="@+id/generateButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:ems="10"
-            android:inputType="number"
-            android:maxLength="10"
-            android:textSize="32sp"
+            android:text="generate password"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceGroup" />
 
-        <Button
-            android:id="@+id/checkButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="check password"
-            android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/passwordEdit" />
-
         <TextView
-            android:id="@+id/resultText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkButton" />
-
-        <Button
-            android:id="@+id/resetButton"
+            android:id="@+id/passwordText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="reset password"
-            android:textSize="32sp"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/generateButton" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
