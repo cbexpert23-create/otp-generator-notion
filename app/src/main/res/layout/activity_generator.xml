@@ -15,6 +15,84 @@
         android:paddingEnd="16dp"
         tools:context="com.mirusystems.otp.GeneratorActivity">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/groupLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioGroup
+                android:id="@+id/deviceGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/vvdButton"
+                app:layout_constraintEnd_toStartOf="@+id/permissionGroup"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/deviceHintText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Please select the device you want to generate a password for below" />
+
+                <RadioButton
+                    android:id="@+id/vvdButton"
+                    android:layout_width="match_parent"
+                    android:text="VVD"
+                    android:textSize="24sp" />
+
+                <RadioButton
+                    android:id="@+id/pcosButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="PCOS"
+                    android:textSize="24sp" />
+
+                <RadioButton
+                    android:id="@+id/rtsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="RTS"
+                    android:textSize="24sp" />
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/permissionGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/adminButton"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/deviceGroup"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/permissionHintText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Please select the permission to create a password for below" />
+
+                <RadioButton
+                    android:id="@+id/adminButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="ADMIN"
+                    android:textSize="24sp" />
+
+                <RadioButton
+                    android:id="@+id/superAdminButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="SUPER ADMIN"
+                    android:textSize="24sp" />
+            </RadioGroup>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <EditText
             android:id="@+id/pollingStationEdit"
             android:layout_width="0dp"
@@ -26,7 +104,7 @@
             app:layout_constraintEnd_toStartOf="@+id/randomNumberEdit"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/groupLayout" />
 
         <EditText
             android:id="@+id/randomNumberEdit"
@@ -39,64 +117,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/pollingStationEdit"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <RadioGroup
-            android:id="@+id/deviceGroup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:checkedButton="@+id/vvdButton"
-            app:layout_constraintEnd_toStartOf="@+id/permissionGroup"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pollingStationEdit">
-
-            <RadioButton
-                android:id="@+id/vvdButton"
-                android:layout_width="match_parent"
-                android:text="VVD"
-                android:textSize="24sp" />
-
-            <RadioButton
-                android:id="@+id/pcosButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="PCOS"
-                android:textSize="24sp" />
-
-            <RadioButton
-                android:id="@+id/rtsButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="RTS"
-                android:textSize="24sp" />
-        </RadioGroup>
-
-        <RadioGroup
-            android:id="@+id/permissionGroup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:checkedButton="@+id/adminButton"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/deviceGroup"
-            app:layout_constraintTop_toBottomOf="@+id/pollingStationEdit">
-
-            <RadioButton
-                android:id="@+id/adminButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="ADMIN"
-                android:textSize="24sp" />
-
-            <RadioButton
-                android:id="@+id/superAdminButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="SUPER ADMIN"
-                android:textSize="24sp" />
-        </RadioGroup>
+            app:layout_constraintTop_toTopOf="@+id/pollingStationEdit" />
 
         <Button
             android:id="@+id/generateButton"
@@ -106,13 +127,15 @@
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/deviceGroup" />
+            app:layout_constraintTop_toBottomOf="@+id/pollingStationEdit" />
 
         <TextView
             android:id="@+id/passwordText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textColor="#000000"
+            android:textSize="36sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/generateButton" />

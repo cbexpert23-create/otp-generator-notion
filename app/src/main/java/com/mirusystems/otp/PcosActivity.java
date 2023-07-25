@@ -16,7 +16,7 @@ import androidx.databinding.DataBindingUtil;
 import com.mirusystems.otp.databinding.ActivityPcosBinding;
 
 public class PcosActivity extends AppCompatActivity {
-    private static final String TAG = "SampleActivity";
+    private static final String TAG = "PcosActivity";
     private ActivityPcosBinding binding;
     private OneTimePassword oneTimePassword;
 
@@ -73,7 +73,7 @@ public class PcosActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setTitle("PCOS " + ActivityUtils.getAppVersion(this));
+        setTitle("PCOS SAMPLE " + ActivityUtils.getAppVersion(this));
     }
 
     @Override

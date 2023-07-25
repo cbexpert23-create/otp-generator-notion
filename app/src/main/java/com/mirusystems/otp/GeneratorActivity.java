@@ -81,7 +81,7 @@ public class GeneratorActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setTitle("GENERATOR " + ActivityUtils.getAppVersion(this));
+        setTitle("OTP GENERATOR " + ActivityUtils.getAppVersion(this));
     }
 
     @Override
@@ -169,18 +169,20 @@ public class GeneratorActivity extends AppCompatActivity {
             case OneTimePassword.VVD:
             case OneTimePassword.PCOS: {
                 binding.pollingStationEdit.setText("");
-                binding.pollingStationEdit.setHint("polling station id (8 digits)");
+                binding.pollingStationEdit.setHint("Polling station ID (8 digits)");
                 binding.pollingStationEdit.requestFocus();
                 binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
                 binding.randomNumberEdit.setText("");
+                binding.passwordText.setText("");
                 break;
             }
             case OneTimePassword.RTS: {
                 binding.pollingStationEdit.setText("");
-                binding.pollingStationEdit.setHint("SAT IMEI (6 digits)");
+                binding.pollingStationEdit.setHint("The middle 6 digits of \"SAT IMEI\"");
                 binding.pollingStationEdit.requestFocus();
                 binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
                 binding.randomNumberEdit.setText("");
+                binding.passwordText.setText("");
                 break;
             }
         }
