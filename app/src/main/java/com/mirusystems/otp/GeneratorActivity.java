@@ -3,7 +3,6 @@ package com.mirusystems.otp;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
@@ -98,19 +97,9 @@ public class GeneratorActivity extends AppCompatActivity {
     private void onSeedTextChanged() {
         String pollingStationId = binding.pollingStationEdit.getText().toString();
         String randomNumber = binding.randomNumberEdit.getText().toString();
-        if (pollingStationId != null && randomNumber != null) {
-            int deviceId = getDeviceId();
-            if (deviceId == OneTimePassword.RTS) {
-                if (pollingStationId.length() == 6 && randomNumber.length() == 3) {
-                    setButtonEnabled(true);
-                    return;
-                }
-            } else {
-                if (pollingStationId.length() == 8 && randomNumber.length() == 3) {
-                    setButtonEnabled(true);
-                    return;
-                }
-            }
+        if (pollingStationId.length() == 8 && randomNumber.length() == 3) {
+            setButtonEnabled(true);
+            return;
         }
         setButtonEnabled(false);
     }
@@ -122,7 +111,7 @@ public class GeneratorActivity extends AppCompatActivity {
     }
 
     private void generatePassword() {
-        String seed = getSeed();
+        String seed = binding.pollingStationEdit.getText().toString();
         int deviceId = getDeviceId();
         String salt = binding.randomNumberEdit.getText().toString();
         try {
@@ -144,47 +133,16 @@ public class GeneratorActivity extends AppCompatActivity {
         return OneTimePassword.VVD;
     }
 
-//    private int getPermission() {
-//        if (binding.permissionGroup.getCheckedRadioButtonId() == R.id.superAdminButton) {
-//            return OneTimePassword.SUPER_ADMIN;
-//        }
-//        return OneTimePassword.ADMIN;
-//    }
-
-    private String getSeed() {
-        String seed;
-        int deviceId = getDeviceId();
-        if (deviceId == OneTimePassword.RTS) {
-            seed = binding.pollingStationEdit.getText().toString() + "80";
-        } else {
-            seed = binding.pollingStationEdit.getText().toString();
-        }
-        return seed;
-    }
-
-
     private void onDeviceIdSelected(int deviceId) {
-        switch (deviceId) {
-            case OneTimePassword.VVD:
-            case OneTimePassword.PCOS: {
-                binding.pollingStationEdit.setText("");
-                binding.pollingStationEdit.setHint("Polling station ID (8 digits)");
-                binding.pollingStationEdit.requestFocus();
-                binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
-                binding.randomNumberEdit.setText("");
-                binding.passwordText.setText("");
-                break;
-            }
-            case OneTimePassword.RTS: {
-                binding.pollingStationEdit.setText("");
-                binding.pollingStationEdit.setHint("The middle 6 digits of \"SAT IMEI\"");
-                binding.pollingStationEdit.requestFocus();
-                binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
-                binding.randomNumberEdit.setText("");
-                binding.passwordText.setText("");
-                break;
-            }
+        if (deviceId == OneTimePassword.VVD || deviceId == OneTimePassword.PCOS) {
+            binding.pollingStationEdit.setHint("Polling station ID (8 digits)");
+        } else if (deviceId == OneTimePassword.RTS) {
+            binding.pollingStationEdit.setHint("The first 8 digits of \"SAT IMEI\"");
         }
+        binding.pollingStationEdit.setText("");
+        binding.pollingStationEdit.requestFocus();
+        binding.randomNumberEdit.setText("");
+        binding.passwordText.setText("");
     }
 
 }
