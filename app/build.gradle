@@ -15,14 +15,30 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        config {
+            keyAlias 'mirusystems_vvd7'
+            keyPassword 'ihec*2020#mir86@'
+            storeFile file('platformkey/platform_iraq.jks')
+            storePassword 'ihec*2020#mir86@'
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    def formattedDate = new Date().format('yyyyMMdd')
+                    outputFileName = "otp-" + variant.versionName + ".apk"
+                }
+            }
         }
     }
     compileOptions {
