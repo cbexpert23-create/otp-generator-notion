@@ -28,8 +28,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:checkedButton="@+id/vvdButton"
-                app:layout_constraintEnd_toStartOf="@+id/pollingStationEdit"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintBottom_toTopOf="@+id/pollingStationEdit"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -68,10 +68,10 @@
                 android:inputType="number"
                 android:maxLength="8"
                 android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@+id/randomNumberEdit"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/deviceGroup"
-                app:layout_constraintTop_toTopOf="@+id/deviceGroup" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/deviceGroup" />
 
             <EditText
                 android:id="@+id/randomNumberEdit"
@@ -81,8 +81,9 @@
                 android:inputType="number"
                 android:maxLength="3"
                 android:textSize="24sp"
-                app:layout_constraintEnd_toEndOf="@+id/pollingStationEdit"
-                app:layout_constraintStart_toStartOf="@+id/pollingStationEdit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/pollingStationEdit" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="The number below is an automatically generated random number (3 digits). Inform the OTP administrator of your polling place ID, random number, and required privileges and receive a corresponding password. Users only see the random number, the password input screen, and the CONFIRM button. Polling station ID and permissions must be entered by the developer."
+            android:text="The number below is an automatically generated random number (3 digits). Inform the OTP administrator of your polling place ID, random number, and receive a corresponding password. Users only see the random number, the password input screen, and the CONFIRM button. Polling station ID must be entered by the developer."
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -59,36 +59,12 @@
                 android:inputType="number"
                 android:maxLength="8"
                 android:textSize="24sp"
-                app:layout_constraintEnd_toStartOf="@+id/permissionGroup"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/pollingStationIdHintText" />
 
-            <RadioGroup
-                android:id="@+id/permissionGroup"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:checkedButton="@+id/adminButton"
-                android:textSize="24sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/pollingStationEdit"
-                app:layout_constraintTop_toTopOf="parent">
 
-                <RadioButton
-                    android:id="@+id/adminButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="ADMIN"
-                    android:textSize="24sp" />
-
-                <RadioButton
-                    android:id="@+id/superAdminButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="SUPER ADMIN"
-                    android:textSize="24sp" />
-            </RadioGroup>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView

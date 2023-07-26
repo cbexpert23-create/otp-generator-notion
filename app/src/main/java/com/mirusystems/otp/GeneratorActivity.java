@@ -68,7 +68,7 @@ public class GeneratorActivity extends AppCompatActivity {
             }
             onDeviceIdSelected(deviceId);
         });
-        binding.permissionGroup.setOnCheckedChangeListener((group, checkedId) -> Log.v(TAG, "onCheckedChanged: group = [" + group + "], checkedId = [" + checkedId + "]"));
+//        binding.permissionGroup.setOnCheckedChangeListener((group, checkedId) -> Log.v(TAG, "onCheckedChanged: group = [" + group + "], checkedId = [" + checkedId + "]"));
         binding.generateButton.setOnClickListener(v -> generatePassword());
 
 //        binding.passwordEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
@@ -124,10 +124,9 @@ public class GeneratorActivity extends AppCompatActivity {
     private void generatePassword() {
         String seed = getSeed();
         int deviceId = getDeviceId();
-        int permission = getPermission();
-        String randomNumber = binding.randomNumberEdit.getText().toString();
+        String salt = binding.randomNumberEdit.getText().toString();
         try {
-            String password = oneTimePassword.generatePassword(seed, deviceId, permission, randomNumber);
+            String password = oneTimePassword.generatePassword(seed, deviceId, salt);
             password = String.format("%s-%s-%s", password.substring(0, 3), password.substring(3, 6), password.substring(6)); // 관리자가 읽기 편하도록 3-3-4로 표시
             binding.passwordText.setText(password);
         } catch (OneTimePasswordException e) {
@@ -145,12 +144,12 @@ public class GeneratorActivity extends AppCompatActivity {
         return OneTimePassword.VVD;
     }
 
-    private int getPermission() {
-        if (binding.permissionGroup.getCheckedRadioButtonId() == R.id.superAdminButton) {
-            return OneTimePassword.SUPER_ADMIN;
-        }
-        return OneTimePassword.ADMIN;
-    }
+//    private int getPermission() {
+//        if (binding.permissionGroup.getCheckedRadioButtonId() == R.id.superAdminButton) {
+//            return OneTimePassword.SUPER_ADMIN;
+//        }
+//        return OneTimePassword.ADMIN;
+//    }
 
     private String getSeed() {
         String seed;

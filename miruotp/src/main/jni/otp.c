@@ -13,6 +13,7 @@
 #include <android/log.h>
 #include <stdlib.h>
 #include <math.h>
+#include "sha256.h"
 
 #define LOG_TAG "otp"
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
@@ -90,17 +91,69 @@ int getMinutes(int day, int hour, int minute) {
 }
 
 
+JNIEXPORT jint JNICALL
+Java_com_mirusystems_otp_Utils_sha256Jni(JNIEnv *env, jobject thiz,
+                                         jbyteArray inputArray, jbyteArray outputArray) {
+    const char *password = NULL;
+    const char *seed = NULL;
+
+    jsize inputLength = (*env)->GetArrayLength(env, inputArray);
+    jbyte *input = (*env)->GetByteArrayElements(env, inputArray, NULL);
+    jbyte *output = (*env)->GetByteArrayElements(env, outputArray, NULL);
+
+    unsigned char hash[SHA256_BLOCK_SIZE];
+    SHA256_CTX sha256;
+
+    sha256_init(&sha256);
+    sha256_update(&sha256, input, inputLength);
+    sha256_final(&sha256, output);
+
+    (*env)->ReleaseByteArrayElements(env, inputArray, input, 0);
+    (*env)->ReleaseByteArrayElements(env, outputArray, output, 0);
+
+    return 0;
+}
 
 JNIEXPORT jstring JNICALL
-Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni(JNIEnv *env, jobject thiz,
-                                                             jstring jSeed, jint deviceId,
-                                                             jint permission, jstring jSalt) {
+Java_com_mirusystems_otp_Utils_GeneratePassword(JNIEnv *env, jobject thiz,
+                                                jstring jSeed, jint deviceId, jstring jSalt) {
     memset(password, 0, sizeof(password));
     const char *seed = NULL;
     const char *salt = NULL;
     seed = (*env)->GetStringUTFChars(env, jSeed, 0);
     salt = (*env)->GetStringUTFChars(env, jSalt, 0);
-//    LOGV("Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni: E, seed = %s, deviceId = %d, permission = %d",
+    char num[21] = {0,};
+    sprintf(num, "2023OTP%s%02d%s", seed, deviceId, salt);
+
+    unsigned char hash[SHA256_BLOCK_SIZE];
+    SHA256_CTX sha256;
+
+    sha256_init(&sha256);
+    sha256_update(&sha256, num, 20);
+    sha256_final(&sha256, hash);
+
+    for (int i = 0; i < 10; ++i) {
+        unsigned char c = hash[i] + hash[i + 10] + hash[i + 20];
+        c = c % 10;
+        password[i] = c + '0';
+    }
+
+    (*env)->ReleaseStringUTFChars(env, jSeed, seed);
+    (*env)->ReleaseStringUTFChars(env, jSalt, salt);
+
+    return (*env)->NewStringUTF(env, password);
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_mirusystems_otp_Utils_generatePasswordJni(JNIEnv *env, jobject thiz,
+                                                   jstring jSeed, jint deviceId,
+                                                   jint permission, jstring jSalt) {
+    memset(password, 0, sizeof(password));
+    const char *seed = NULL;
+    const char *salt = NULL;
+    seed = (*env)->GetStringUTFChars(env, jSeed, 0);
+    salt = (*env)->GetStringUTFChars(env, jSalt, 0);
+//    LOGV("Java_com_mirusystems_otp_Utils_generatePasswordJni: E, seed = %s, deviceId = %d, permission = %d",
 //         seed, deviceId, permission);
 
     int pollingCenter = strtoi(&seed[0], 6);
@@ -147,15 +200,15 @@ Java_com_mirusystems_otp_OneTimePassword_generatePasswordJni(JNIEnv *env, jobjec
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni(JNIEnv *env, jobject thiz,
-                                                          jstring jPassword, jstring jSeed,
-                                                          jint deviceId, jint permission, jstring jSalt) {
+Java_com_mirusystems_otp_Utils_checkPasswordJni(JNIEnv *env, jobject thiz,
+                                                jstring jPassword, jstring jSeed,
+                                                jint deviceId, jint permission, jstring jSalt) {
     const char *password = NULL;
     const char *seed = NULL;
 
     password = (*env)->GetStringUTFChars(env, jPassword, 0);
     seed = (*env)->GetStringUTFChars(env, jSeed, 0);
-//    LOGV("Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni: E, password = %s, seed = %s, permission = %d",
+//    LOGV("Java_com_mirusystems_otp_Utils_checkPasswordJni: E, password = %s, seed = %s, permission = %d",
 //         password, seed, permission);
 
     long long s = decrypt(password);
@@ -237,13 +290,13 @@ Java_com_mirusystems_otp_OneTimePassword_checkPasswordJni(JNIEnv *env, jobject t
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_mirusystems_otp_OneTimePassword_getSeedJni(JNIEnv *env, jobject thiz,
-                                                    jstring jPassword) {
+Java_com_mirusystems_otp_Utils_getSeedJni(JNIEnv *env, jobject thiz,
+                                          jstring jPassword) {
     jstring result;
     const char *password = NULL;
 
     password = (*env)->GetStringUTFChars(env, jPassword, 0);
-//    LOGV("Java_com_mirusystems_otp_OneTimePassword_getSeedJni: E, password = %s",
+//    LOGV("Java_com_mirusystems_otp_Utils_getSeedJni: E, password = %s",
 //         password);
 
     long long s = decrypt(password);

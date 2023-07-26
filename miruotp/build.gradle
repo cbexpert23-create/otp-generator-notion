@@ -1,5 +1,5 @@
 plugins {
-    id  'com.android.library'
+    id 'com.android.library'
 }
 android {
     compileSdk 33
@@ -17,24 +17,22 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//            consumerProguardFile 'proguard-rules.pro'
             libraryVariants.all { variant ->
                 variant.outputs.all {
                     def formattedDate = new Date().format('yyyyMMdd')
-                    outputFileName = "${archivesBaseName}_v${version}_${formattedDate}-debug.aar"
+                    outputFileName = "${archivesBaseName}-${version}.aar"
                 }
             }
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//            consumerProguardFile 'proguard-rules.pro'
             libraryVariants.all { variant ->
                 variant.outputs.all {
                     def formattedDate = new Date().format('yyyyMMdd')
-                    outputFileName = "${archivesBaseName}_v${version}_${formattedDate}.aar"
+                    outputFileName = "${archivesBaseName}-${version}.aar"
                 }
             }
         }
