@@ -24,6 +24,7 @@ public class GeneratorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_generator);
+
         binding.rootLayout.setOnTouchListener((v, event) -> {
             ActivityUtils.hideKeyboard(this);
             return false;
@@ -88,8 +89,8 @@ public class GeneratorActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
-                return true;
+                //onBackPressed();
+                //return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -119,6 +120,12 @@ public class GeneratorActivity extends AppCompatActivity {
         });
     }
 
+    //    private void hideKeyboard()
+//    {
+//        imm.hideSoftInputFromWindow(binding.pollingStationEdit.getWindowToken(), 0);
+//        imm.hideSoftInputFromWindow(binding.randomNumberEdit.getWindowToken(), 0);
+//    }
+//
     private void generatePassword() {
         String seed = binding.pollingStationEdit.getText().toString();
         int deviceId = getDeviceId();
@@ -126,6 +133,8 @@ public class GeneratorActivity extends AppCompatActivity {
         if (deviceId == OneTimePassword.RTS) {
             seed = seed + "80";
         }
+        ActivityUtils.hideKeyboard(this);
+        //hideKeyboard();
         try {
             String password = oneTimePassword.generatePassword(seed, deviceId, salt);
             password = String.format("%s-%s-%s", password.substring(0, 3), password.substring(3, 6), password.substring(6)); // 관리자가 읽기 편하도록 3-3-4로 표시
@@ -147,10 +156,10 @@ public class GeneratorActivity extends AppCompatActivity {
 
     private void onDeviceIdSelected(int deviceId) {
         if (deviceId == OneTimePassword.VVD || deviceId == OneTimePassword.PCOS) {
-            binding.pollingStationEdit.setHint("Polling station ID (8 digits)");
+            binding.pollingStationEdit.setHint(R.string.msg_psid_hint);
             binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
         } else if (deviceId == OneTimePassword.RTS) {
-            binding.pollingStationEdit.setHint("The middle 6 digits of \"SAT IMEI\"");
+            binding.pollingStationEdit.setHint(R.string.msg_imei_hint);
             binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
         }
         binding.pollingStationEdit.setText("");

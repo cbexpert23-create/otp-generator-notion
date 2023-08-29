@@ -27,6 +27,8 @@
                 android:id="@+id/deviceGroup"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:checkedButton="@+id/vvdButton"
                 app:layout_constraintEnd_toStartOf="@+id/pollingStationEdit"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -37,37 +39,41 @@
                     android:id="@+id/deviceHintText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Please select the device you want to generate a password for below" />
+                    android:text="@string/msg_device_hint"
+                    android:textSize="24sp" />
 
                 <RadioButton
                     android:id="@+id/vvdButton"
                     android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:text="VVD"
-                    android:textSize="24sp" />
+                    android:textSize="45sp" />
 
                 <RadioButton
                     android:id="@+id/pcosButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="PCOS"
-                    android:textSize="24sp" />
+                    android:textSize="45sp" />
 
                 <RadioButton
                     android:id="@+id/rtsButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="RTS"
-                    android:textSize="24sp" />
+                    android:textSize="45sp" />
             </RadioGroup>
 
             <EditText
                 android:id="@+id/pollingStationEdit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="polling station id (8 digits)"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/msg_psid_hint"
                 android:inputType="number"
                 android:maxLength="8"
-                android:textSize="24sp"
+                android:textSize="40sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/deviceGroup"
@@ -77,10 +83,10 @@
                 android:id="@+id/randomNumberEdit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="random number (3 digits)"
+                android:hint="@string/msg_random_hint"
                 android:inputType="number"
                 android:maxLength="3"
-                android:textSize="24sp"
+                android:textSize="40sp"
                 app:layout_constraintEnd_toEndOf="@+id/pollingStationEdit"
                 app:layout_constraintStart_toStartOf="@+id/pollingStationEdit"
                 app:layout_constraintTop_toBottomOf="@+id/pollingStationEdit" />
@@ -91,8 +97,8 @@
             android:id="@+id/generateButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="generate password"
-            android:textSize="24sp"
+            android:text="@string/msg_genenrate_btn"
+            android:textSize="60sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/groupLayout" />
@@ -102,7 +108,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="#000000"
-            android:textSize="36sp"
+            android:textSize="70sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
