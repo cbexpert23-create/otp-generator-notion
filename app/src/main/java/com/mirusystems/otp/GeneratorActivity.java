@@ -3,6 +3,7 @@ package com.mirusystems.otp;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
@@ -95,11 +96,19 @@ public class GeneratorActivity extends AppCompatActivity {
     }
 
     private void onSeedTextChanged() {
+        int deviceId = getDeviceId();
         String pollingStationId = binding.pollingStationEdit.getText().toString();
         String randomNumber = binding.randomNumberEdit.getText().toString();
-        if (pollingStationId.length() == 8 && randomNumber.length() == 3) {
-            setButtonEnabled(true);
-            return;
+        if (deviceId == OneTimePassword.PCOS || deviceId == OneTimePassword.VVD) {
+            if (pollingStationId.length() == 8 && randomNumber.length() == 3) {
+                setButtonEnabled(true);
+                return;
+            }
+        } else {
+            if (pollingStationId.length() == 6 && randomNumber.length() == 3) {
+                setButtonEnabled(true);
+                return;
+            }
         }
         setButtonEnabled(false);
     }
@@ -114,6 +123,9 @@ public class GeneratorActivity extends AppCompatActivity {
         String seed = binding.pollingStationEdit.getText().toString();
         int deviceId = getDeviceId();
         String salt = binding.randomNumberEdit.getText().toString();
+        if (deviceId == OneTimePassword.RTS) {
+            seed = seed + "80";
+        }
         try {
             String password = oneTimePassword.generatePassword(seed, deviceId, salt);
             password = String.format("%s-%s-%s", password.substring(0, 3), password.substring(3, 6), password.substring(6)); // 관리자가 읽기 편하도록 3-3-4로 표시
@@ -136,8 +148,10 @@ public class GeneratorActivity extends AppCompatActivity {
     private void onDeviceIdSelected(int deviceId) {
         if (deviceId == OneTimePassword.VVD || deviceId == OneTimePassword.PCOS) {
             binding.pollingStationEdit.setHint("Polling station ID (8 digits)");
+            binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
         } else if (deviceId == OneTimePassword.RTS) {
-            binding.pollingStationEdit.setHint("The first 8 digits of \"SAT IMEI\"");
+            binding.pollingStationEdit.setHint("The middle 6 digits of \"SAT IMEI\"");
+            binding.pollingStationEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
         }
         binding.pollingStationEdit.setText("");
         binding.pollingStationEdit.requestFocus();
