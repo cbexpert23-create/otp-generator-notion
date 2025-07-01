@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">OTP 2.0.0</string>
+    <string name="app_name">OTP 2.0.2</string>
     <string name="msg_device_hint">Please select the device you want to generate a password for below</string>
     <string name="msg_psid_hint">polling station id (8 digits)</string>
-    <string name="msg_imei_hint">"The middle 6 digits of \"SAT IMEI\""</string>
+    <string name="msg_imei_hint">"The last 6 digits of \"SAT IMEI\""</string>
     <string name="msg_random_hint">random number (3 digits)</string>
     <string name="msg_genenrate_btn">generate password</string>
 
