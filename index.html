@@ -47,29 +47,7 @@
             font-size: 0.8rem;
         }
 
-        .status {
-            text-align: center;
-            margin-bottom: 12px;
-            padding: 6px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
 
-        .wasm-loading {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .wasm-ready {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .wasm-error {
-            background: #f8d7da;
-            color: #721c24;
-        }
 
         .device-section {
             margin-bottom: 16px;
@@ -282,10 +260,6 @@
             <p>One-Time Password 생성기</p>
         </div>
 
-        <div id="wasmStatus" class="status wasm-loading">
-            WebAssembly 모듈 로딩 중...
-        </div>
-
         <div class="device-section">
             <h3>디바이스 타입</h3>
             <div class="device-buttons">
@@ -298,11 +272,11 @@
         <div class="input-section">
             <div class="input-group">
                 <label for="pollingStation">Polling Station ID</label>
-                <input type="text" id="pollingStation" class="input-field" placeholder="8자리 숫자 입력" maxlength="8" disabled>
+                <input type="number" id="pollingStation" class="input-field" placeholder="8자리 숫자 입력" maxlength="8" disabled>
             </div>
             <div class="input-group">
                 <label for="randomNumber">Random Number</label>
-                <input type="text" id="randomNumber" class="input-field" placeholder="3자리 숫자 입력" maxlength="3" disabled>
+                <input type="number" id="randomNumber" class="input-field" placeholder="3자리 숫자 입력" maxlength="3" disabled>
             </div>
         </div>
 
@@ -379,10 +353,6 @@
             }
 
             updateUI() {
-                const status = document.getElementById('wasmStatus');
-                status.textContent = '✅ WebAssembly 모듈 준비 완료';
-                status.className = 'status wasm-ready';
-
                 // 입력 필드 활성화
                 document.getElementById('pollingStation').disabled = false;
                 document.getElementById('randomNumber').disabled = false;
@@ -394,10 +364,6 @@
             }
 
             updateUIError(errorMessage) {
-                const status = document.getElementById('wasmStatus');
-                status.textContent = `❌ WebAssembly 모듈 로드 실패: ${errorMessage}`;
-                status.className = 'status wasm-error';
-                
                 // 에러 메시지 표시
                 const messageDiv = document.getElementById('message');
                 messageDiv.textContent = `WebAssembly 로드 실패: ${errorMessage}`;
@@ -499,16 +465,18 @@
                     this.generateOTP();
                 });
 
-                // 숫자만 입력 허용
-                this.pollingStationInput.addEventListener('keypress', (e) => {
-                    if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault();
+                // 숫자 입력 필드 최대값 설정
+                this.pollingStationInput.addEventListener('input', () => {
+                    const value = this.pollingStationInput.value;
+                    if (value.length > 8) {
+                        this.pollingStationInput.value = value.slice(0, 8);
                     }
                 });
 
-                this.randomNumberInput.addEventListener('keypress', (e) => {
-                    if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault();
+                this.randomNumberInput.addEventListener('input', () => {
+                    const value = this.randomNumberInput.value;
+                    if (value.length > 3) {
+                        this.randomNumberInput.value = value.slice(0, 3);
                     }
                 });
             }
