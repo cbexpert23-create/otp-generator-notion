@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #37352f;
+            line-height: 1.5;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid #e1e1e1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            color: #37352f;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: #787774;
+            font-size: 0.9rem;
+        }
+
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .wasm-loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .wasm-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .wasm-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .device-section {
+            margin-bottom: 24px;
+        }
+
+        .device-section h3 {
+            color: #37352f;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .device-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .device-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 60px;
+        }
+
+        .device-btn:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
+        }
+
+        .device-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .device-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-section {
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #37352f;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease;
+            background: white;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-field.error {
+            border-color: #dc2626;
+        }
+
+        .input-field:disabled {
+            background: #f9fafb;
+            cursor: not-allowed;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-bottom: 24px;
+        }
+
+        .generate-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .generate-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .result-section {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .result-section h3 {
+            color: #37352f;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .password-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2563eb;
+            letter-spacing: 2px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .success-message {
+            color: #059669;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .device-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .device-btn {
+                width: 120px;
+            }
+            
+            .password-display {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>OTP Generator</h1>
+            <p>One-Time Password 생성기</p>
+        </div>
+
+        <div id="wasmStatus" class="status wasm-loading">
+            WebAssembly 모듈 로딩 중...
+        </div>
+
+        <div class="device-section">
+            <h3>디바이스 타입</h3>
+            <div class="device-buttons">
+                <button class="device-btn active" data-device="1">VVD</button>
+                <button class="device-btn" data-device="2">PCOS</button>
+                <button class="device-btn" data-device="3">RTS</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="pollingStation">Polling Station ID</label>
+                <input type="text" id="pollingStation" class="input-field" placeholder="8자리 숫자 입력" maxlength="8" disabled>
+            </div>
+            <div class="input-group">
+                <label for="randomNumber">Random Number</label>
+                <input type="text" id="randomNumber" class="input-field" placeholder="3자리 숫자 입력" maxlength="3" disabled>
+            </div>
+        </div>
+
+        <button id="generateBtn" class="generate-btn" disabled>OTP 생성</button>
+
+        <div class="result-section">
+            <h3>생성된 OTP</h3>
+            <div id="passwordDisplay" class="password-display">------</div>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script src="sha256_wasm.js"></script>
+    <script>
+        // WebAssembly 모듈 관리 클래스
+        class WASMOTPGenerator {
+            constructor() {
+                this.module = null;
+                this.isReady = false;
+                this.VVD = 1;
+                this.PCOS = 2;
+                this.RTS = 3;
+            }
+
+            async init() {
+                try {
+                    console.log('WebAssembly 모듈 로딩 시작...');
+                    
+                    // WebAssembly 지원 확인
+                    if (!('WebAssembly' in window)) {
+                        throw new Error('이 브라우저는 WebAssembly를 지원하지 않습니다.');
+                    }
+                    
+                    // 모듈 로드 전 상태 확인
+                    if (typeof Module === 'undefined') {
+                        throw new Error('Module 객체를 찾을 수 없습니다.');
+                    }
+                    
+                    // WebAssembly 모듈 로드 (Promise로 래핑)
+                    this.module = await new Promise((resolve, reject) => {
+                        // 모듈 초기화 완료 콜백 설정
+                        Module.onRuntimeInitialized = () => {
+                            console.log('WebAssembly 런타임 초기화 완료');
+                            resolve(Module);
+                        };
+                        
+                        // 에러 처리
+                        Module.onAbort = (what) => {
+                            reject(new Error(`WebAssembly 모듈 초기화 실패: ${what}`));
+                        };
+                        
+                        // 모듈이 이미 로드된 경우
+                        if (Module.calledRun) {
+                            resolve(Module);
+                        }
+                    });
+                    
+                    // 모듈 초기화 확인
+                    if (!this.module || !this.module._generate_otp) {
+                        throw new Error('WebAssembly 모듈이 올바르게 초기화되지 않았습니다.');
+                    }
+                    
+                    this.isReady = true;
+                    
+                    // UI 업데이트
+                    this.updateUI();
+                    
+                    console.log('WebAssembly 모듈이 성공적으로 로드되었습니다.');
+                    
+                } catch (error) {
+                    console.error('WebAssembly 모듈 로드 실패:', error);
+                    this.updateUIError(error.message);
+                }
+            }
+
+            updateUI() {
+                const status = document.getElementById('wasmStatus');
+                status.textContent = '✅ WebAssembly 모듈 준비 완료';
+                status.className = 'status wasm-ready';
+
+                // 입력 필드 활성화
+                document.getElementById('pollingStation').disabled = false;
+                document.getElementById('randomNumber').disabled = false;
+                
+                // 디바이스 버튼 활성화
+                document.querySelectorAll('.device-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }
+
+            updateUIError(errorMessage) {
+                const status = document.getElementById('wasmStatus');
+                status.textContent = `❌ WebAssembly 모듈 로드 실패: ${errorMessage}`;
+                status.className = 'status wasm-error';
+                
+                // 에러 메시지 표시
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = `WebAssembly 로드 실패: ${errorMessage}`;
+                messageDiv.className = 'error-message';
+            }
+
+            generatePassword(seed, deviceId, salt) {
+                if (!this.isReady) {
+                    throw new Error("WebAssembly 모듈이 아직 로드되지 않았습니다.");
+                }
+
+                if (!this.module._generate_otp || !this.module._generate_otp_rts) {
+                    throw new Error("필요한 WebAssembly 함수를 찾을 수 없습니다.");
+                }
+
+                // 출력 버퍼 할당
+                const outputBuffer = this.module._malloc(11); // 10자리 + null terminator
+                
+                try {
+                    if (deviceId === this.RTS) {
+                        // RTS 디바이스용 함수 호출
+                        this.module.ccall(
+                            'generate_otp_rts',
+                            'void',
+                            ['string', 'number', 'string', 'number'],
+                            [seed, deviceId, salt, outputBuffer]
+                        );
+                    } else {
+                        // 일반 디바이스용 함수 호출
+                        this.module.ccall(
+                            'generate_otp',
+                            'void',
+                            ['string', 'number', 'string', 'number'],
+                            [seed, deviceId, salt, outputBuffer]
+                        );
+                    }
+
+                    // 결과 읽기
+                    const result = this.module.UTF8ToString(outputBuffer);
+                    return result;
+                } finally {
+                    // 메모리 해제
+                    this.module._free(outputBuffer);
+                }
+            }
+
+            formatPassword(password) {
+                return `${password.substring(0, 3)}-${password.substring(3, 6)}-${password.substring(6)}`;
+            }
+        }
+
+        // UI 관리 클래스
+        class OTPUI {
+            constructor() {
+                this.generator = new WASMOTPGenerator();
+                this.currentDevice = 1; // VVD
+                this.initializeElements();
+                this.bindEvents();
+                this.updatePlaceholder();
+                
+                // WebAssembly 모듈 초기화
+                this.generator.init();
+            }
+
+            initializeElements() {
+                this.deviceButtons = document.querySelectorAll('.device-btn');
+                this.pollingStationInput = document.getElementById('pollingStation');
+                this.randomNumberInput = document.getElementById('randomNumber');
+                this.generateButton = document.getElementById('generateBtn');
+                this.passwordDisplay = document.getElementById('passwordDisplay');
+                this.messageDiv = document.getElementById('message');
+            }
+
+            bindEvents() {
+                // 디바이스 버튼 이벤트
+                this.deviceButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        if (btn.disabled) return;
+                        
+                        this.deviceButtons.forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentDevice = parseInt(e.target.dataset.device);
+                        this.updatePlaceholder();
+                        this.validateInputs();
+                    });
+                });
+
+                // 입력 필드 이벤트
+                this.pollingStationInput.addEventListener('input', () => {
+                    this.validateInputs();
+                });
+
+                this.randomNumberInput.addEventListener('input', () => {
+                    this.validateInputs();
+                });
+
+                // 생성 버튼 이벤트
+                this.generateButton.addEventListener('click', () => {
+                    this.generateOTP();
+                });
+
+                // 숫자만 입력 허용
+                this.pollingStationInput.addEventListener('keypress', (e) => {
+                    if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+
+                this.randomNumberInput.addEventListener('keypress', (e) => {
+                    if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            updatePlaceholder() {
+                const maxLength = this.currentDevice === this.generator.RTS ? 6 : 8;
+                this.pollingStationInput.maxLength = maxLength;
+                this.pollingStationInput.placeholder = `${maxLength}자리 숫자 입력`;
+                this.pollingStationInput.value = '';
+                this.randomNumberInput.value = '';
+                this.passwordDisplay.textContent = '------';
+                this.messageDiv.textContent = '';
+                this.validateInputs();
+            }
+
+            validateInputs() {
+                if (!this.generator.isReady) {
+                    this.generateButton.disabled = true;
+                    return;
+                }
+
+                const pollingStation = this.pollingStationInput.value;
+                const randomNumber = this.randomNumberInput.value;
+                const maxLength = this.currentDevice === this.generator.RTS ? 6 : 8;
+
+                let isValid = true;
+
+                // Polling Station 검증
+                if (pollingStation.length !== maxLength) {
+                    this.pollingStationInput.classList.add('error');
+                    isValid = false;
+                } else {
+                    this.pollingStationInput.classList.remove('error');
+                }
+
+                // Random Number 검증
+                if (randomNumber.length !== 3) {
+                    this.randomNumberInput.classList.add('error');
+                    isValid = false;
+                } else {
+                    this.randomNumberInput.classList.remove('error');
+                }
+
+                // 숫자 검증
+                if (pollingStation && !/^\d+$/.test(pollingStation)) {
+                    this.pollingStationInput.classList.add('error');
+                    isValid = false;
+                }
+
+                if (randomNumber && !/^\d+$/.test(randomNumber)) {
+                    this.randomNumberInput.classList.add('error');
+                    isValid = false;
+                }
+
+                this.generateButton.disabled = !isValid;
+            }
+
+            generateOTP() {
+                try {
+                    const seed = this.pollingStationInput.value;
+                    const salt = this.randomNumberInput.value;
+
+                    const password = this.generator.generatePassword(seed, this.currentDevice, salt);
+                    const formattedPassword = this.generator.formatPassword(password);
+
+                    this.passwordDisplay.textContent = formattedPassword;
+                    this.messageDiv.textContent = 'OTP가 성공적으로 생성되었습니다!';
+                    this.messageDiv.className = 'success-message';
+
+                    // 애니메이션 효과
+                    this.passwordDisplay.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.passwordDisplay.style.transform = 'scale(1)';
+                    }, 200);
+
+                } catch (error) {
+                    console.error('OTP 생성 중 오류:', error);
+                    this.messageDiv.textContent = `오류: ${error.message}`;
+                    this.messageDiv.className = 'error-message';
+                    this.passwordDisplay.textContent = '------';
+                }
+            }
+        }
+
+        // 앱 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            new OTPUI();
+        });
+    </script>
+</body>
+</html>

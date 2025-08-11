@@ -1,139 +1,53 @@
+# OTP Generator for Notion
 
+Notion에서 사용할 수 있는 OTP(One-Time Password) 생성기입니다.
 
-##모듈 추가방법 (프로젝트가 같은 레벨의 디렉토리에 있다고 가정)
+## 기능
 
-###\<project\>/settings.gradle
+- VVD, PCOS, RTS 디바이스 지원
+- WebAssembly 기반 빠른 OTP 생성
+- Notion Embed 호환 디자인
+- 반응형 UI
 
-include ':miruotp'
-project(':miruotp').projectDir = new File("../iraq-otp-lib/miruotp")
+## 사용 방법
 
-###\<project\>/app/build.gradle
+### 1. GitHub Pages 배포
 
-dependencies {
-    implementation project(path: ':miruotp')
-}
+1. 이 저장소를 GitHub에 업로드
+2. Settings > Pages에서 Source를 "Deploy from a branch"로 설정
+3. Branch를 "main"으로, folder를 "/ (root)"로 설정
+4. 배포 완료 후 제공되는 URL 복사
 
+### 2. Notion에서 사용
 
+1. Notion 페이지에서 `/embed` 입력
+2. GitHub Pages URL 입력: `https://[username].github.io/[repository-name]/otp-notion.html`
+3. Enter 키로 삽입
 
-## 라이브러리 사용방법
+### 3. 로컬 테스트
 
-### generatePassword
-
-```java
-public String generatePassword(String seed, int deviceId, int permission) 
+```bash
+python3 -m http.server 8000
 ```
 
-#### seed
+그 후 브라우저에서 `http://localhost:8000/otp-notion.html` 접속
 
-- VVD, PCOS: polling center + polling station ex) "105201" + "01" = "10520101"
-- RTS: imei 중 가운데 6자리 + "80" ex) "800008" + "80" = "80000880"
+## 파일 구조
 
-#### deviceId
+- `otp-notion.html` - Notion용 최적화된 OTP 생성기
+- `sha256_wasm.js` - WebAssembly 모듈
+- `sha256_wasm.wasm` - WebAssembly 바이너리
+- `otp_wasm.c` - C 소스 코드
 
-- VVD: 1
-- PCOS: 2
-- RTS: 3
+## 예시
 
-#### permission
+- `99010101 / 105` → `239-912-0676`
+- `12200102 / 100` → `030-231-2630`
+- `10552001 / 225` → `688-222-3794`
 
-- ADMIN: 0
-- SUPER ADMIN: 5
+## 기술 스택
 
-#### Return Value
-
-영문 대문자 10자
-
-#### exception
-
-- 인자가 null
-- 인자의 문자열 조건 맞지 않을 때
-
-
-
-### checkPassword
-
-```java
-public boolean checkPassword(String password, String seed, int deviceId, int permission)
-```
-
-#### password
-
-- 영문 대문자 10자
-
-#### seed
-
-- VVD, PCOS: polling center + polling station ex) "105201" + "01" = "10520101"
-- RTS: imei 중 가운데 6자리 + "80" ex) "800008" + "80" = "80000880"
-
-#### deviceId
-
-- VVD: 1
-- PCOS: 2
-- RTS: 3
-
-#### permission
-
-- ADMIN: 0
-- SUPER ADMIN: 5
-
-#### Return Value
-
-- true: 패스워드 사용가능
-- false: 패스워드 불일치
-
-#### exception
-
-- 인자가 null
-- 인자의 문자열 조건 맞지 않을 때
-- 이미 사용한 패스워드일 때
-
-
-
-## PIN Code 규칙
-
-PIN Code 는 총 16자리의 숫자이다.
-
-Generates a string composed of
-
-DC 1 checksum from the rest of the string
-
-PS 2 polling station
-
-PC 6 polling center
-
-DD 2 day of the month
-
-HH 2 hour
-
-MM 2 minute
-
-AC 1 action (0: admin; 5: superadmin)
-
-The resulting 16-digit string is reduced to 14-digits transforming the six of DDHHMM into five 
-
-calculating the value of the minute within the month and adding CA to the first digit of the calculation result of the minutes. 
-
-The first digit of the minute calculation can not be greater than 4 and AC has a maximum value of 5, then the maximum sum is 9, a single digit.
-
-### checksum
-
-- PS + PC + DD + HH + MM + U
-- 각 숫자들의 합을 구하고 합이 1자리 숫자가 될 때까지 합의 숫자들의 합을 구하여 checksum으로 사용
-
-### total minutes
-
-- DD+HH+MM → minuts
-
-- ((DD-1) * (24 * 60)) + (HH * 60) + MM
-- MIN: 1일 0시 0분 → 0
-- MAX: 31일 23시 59분 → 46079
-- SUPER_ADMIN은 50000 추가
-  - total minutes가 360 이고 SUPER_ADMIN 권한을 사용한다면 50360
-  - total minutes가 360 이고 ADMIN 권한을 사용한다면 00360
-
-### num
-
-- CS + PS + PC + UMIN
-
-### alphabet
+- HTML5, CSS3, JavaScript
+- WebAssembly (Emscripten)
+- SHA256 해시 알고리즘
 
