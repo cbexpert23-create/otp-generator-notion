@@ -20,7 +20,16 @@ void sha256_hash_string(const char* input, unsigned char* output) {
 // 원본 GeneratePassword 알고리즘 사용
 void generate_otp(const char* seed, int deviceId, const char* salt, char* output) {
     char num[21] = {0,};
-    sprintf(num, "2023OTP%s%02d%s", seed, deviceId, salt);
+    char processed_seed[9] = {0,};
+    
+    // RTS의 경우 6자리 시드에 80을 붙여서 8자리로 만듦
+    if (deviceId == RTS) {
+        sprintf(processed_seed, "%s80", seed);
+    } else {
+        strcpy(processed_seed, seed);
+    }
+    
+    sprintf(num, "2023OTP%s%02d%s", processed_seed, deviceId, salt);
 
     unsigned char hash[SHA256_BLOCK_SIZE];
     sha256_hash_string(num, hash);
