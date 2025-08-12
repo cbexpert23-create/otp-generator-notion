@@ -375,7 +375,7 @@
                     throw new Error("WebAssembly 모듈이 아직 로드되지 않았습니다.");
                 }
 
-                if (!this.module._generate_otp || !this.module._generate_otp_rts) {
+                if (!this.module._generate_otp) {
                     throw new Error("필요한 WebAssembly 함수를 찾을 수 없습니다.");
                 }
 
@@ -383,23 +383,13 @@
                 const outputBuffer = this.module._malloc(11); // 10자리 + null terminator
                 
                 try {
-                    if (deviceId === this.RTS) {
-                        // RTS 디바이스용 함수 호출
-                        this.module.ccall(
-                            'generate_otp_rts',
-                            'void',
-                            ['string', 'number', 'string', 'number'],
-                            [seed, deviceId, salt, outputBuffer]
-                        );
-                    } else {
-                        // 일반 디바이스용 함수 호출
-                        this.module.ccall(
-                            'generate_otp',
-                            'void',
-                            ['string', 'number', 'string', 'number'],
-                            [seed, deviceId, salt, outputBuffer]
-                        );
-                    }
+                    // 모든 디바이스 타입에 대해 동일한 함수 사용
+                    this.module.ccall(
+                        'generate_otp',
+                        'void',
+                        ['string', 'number', 'string', 'number'],
+                        [seed, deviceId, salt, outputBuffer]
+                    );
 
                     // 결과 읽기
                     const result = this.module.UTF8ToString(outputBuffer);
